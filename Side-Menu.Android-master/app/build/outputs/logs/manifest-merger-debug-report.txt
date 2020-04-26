@@ -1,0 +1,166 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+MERGED from [:library] /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/library/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-13:12
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/83af8b8baa2279d9e00a921ddae1bcfb/appcompat-v7-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/654a7c8cda33c0bf59ba0494f4bc2d1c/support-fragment-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.github.ozodrukh.CircularReveal:spring-revealmanager:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/50c47b9cb62fac710d91cd70e732dffa/spring-revealmanager-2.1.0/AndroidManifest.xml:2:1-15:12
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b48a011b8b0aa6d035b2f3e78d9188d/animated-vector-drawable-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f94579b219cc8d744f6d2262c5d16358/support-core-ui-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a63f2341c20985dfd7f4d9c10764247a/support-core-utils-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/19ba9de4dc0430f104d96facd1dff1da/support-vector-drawable-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:loader:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/899905d8a4494814eb0ee75836a4eb51/loader-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:viewpager:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/fb48bba8f19aaed9209b80242b242828/viewpager-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/afb72092c2cb62842f45832614a8ae10/coordinatorlayout-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/368095a50585f5a751c8dedc81a9b01b/drawerlayout-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b20eb017c6067d84524c2605acfaafbc/slidingpanelayout-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:customview:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/db8f549757758c14192f01a9eabcafd7/customview-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/febd18b7a83220618115aad8cf58469d/swiperefreshlayout-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/8557eb428f3b00a968cfbe3c4eaf86fd/asynclayoutinflater-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/4a1e6602ccfe9c79db5659a249771713/support-compat-28.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0c400e0acec2cfbc967a0026fa94df3f/versionedparcelable-28.0.0/AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/9b24b88f0334493b1c55b6292679780f/cursoradapter-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b39f862c6a3794e845a7620d84172ca1/runtime-1.1.1/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:documentfile:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/5cd00fdfcafd5b1925ffa9ed72759b0a/documentfile-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/ee9096aabde438b6b1caf17f801eb4e3/localbroadcastmanager-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:print:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/1cbcd4e02efb1b7506fe94981b3ce586/print-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/1172d19d55e76f008cdddf8af3884ffc/viewmodel-1.1.1/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/36f7aaeb6066f5dd5e5362b8d234dfad/livedata-1.1.1/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/df49a8b5a11a3ef61dc4213f3bed828d/livedata-core-1.1.1/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b7aa4c916cb0b7cd2e129d5b61ac2098/runtime-1.1.1/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:interpolator:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/44ad7ba252e16f9ee5c6750c93717039/interpolator-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.github.ozodrukh.CircularReveal:circualreveal:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a9abfd774564ff93a8a3ba87e80de828/circualreveal-2.1.0/AndroidManifest.xml:2:1-12:12
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+	package
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:3:11-49
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:1-22:12
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:2:11-69
+application
+ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:5:5-20:19
+MERGED from [:library] /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/library/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-20
+MERGED from [:library] /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/library/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-20
+MERGED from [com.github.ozodrukh.CircularReveal:spring-revealmanager:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/50c47b9cb62fac710d91cd70e732dffa/spring-revealmanager-2.1.0/AndroidManifest.xml:9:5-13:19
+MERGED from [com.github.ozodrukh.CircularReveal:spring-revealmanager:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/50c47b9cb62fac710d91cd70e732dffa/spring-revealmanager-2.1.0/AndroidManifest.xml:9:5-13:19
+MERGED from [com.android.support:support-compat:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/4a1e6602ccfe9c79db5659a249771713/support-compat-28.0.0/AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:support-compat:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/4a1e6602ccfe9c79db5659a249771713/support-compat-28.0.0/AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0c400e0acec2cfbc967a0026fa94df3f/versionedparcelable-28.0.0/AndroidManifest.xml:22:5-23:19
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0c400e0acec2cfbc967a0026fa94df3f/versionedparcelable-28.0.0/AndroidManifest.xml:22:5-23:19
+MERGED from [com.github.ozodrukh.CircularReveal:circualreveal:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a9abfd774564ff93a8a3ba87e80de828/circualreveal-2.1.0/AndroidManifest.xml:10:5-20
+MERGED from [com.github.ozodrukh.CircularReveal:circualreveal:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a9abfd774564ff93a8a3ba87e80de828/circualreveal-2.1.0/AndroidManifest.xml:10:5-20
+	android:appComponentFactory
+		ADDED from [com.android.support:support-compat:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/4a1e6602ccfe9c79db5659a249771713/support-compat-28.0.0/AndroidManifest.xml:22:18-91
+	android:supportsRtl
+		ADDED from [com.github.ozodrukh.CircularReveal:spring-revealmanager:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/50c47b9cb62fac710d91cd70e732dffa/spring-revealmanager-2.1.0/AndroidManifest.xml:12:9-35
+	android:label
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:8:9-41
+	android:icon
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:7:9-45
+	android:allowBackup
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:6:9-35
+	android:theme
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:9:9-40
+activity#yalantis.com.sidemenu.sample.MainActivity
+ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:10:9-19:20
+	android:label
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:13:13-45
+	android:configChanges
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:12:13-59
+	android:name
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:11:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:14:13-18:29
+action#android.intent.action.MAIN
+ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:15:17-68
+	android:name
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:15:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:17:17-76
+	android:name
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml:17:27-74
+uses-sdk
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+MERGED from [:library] /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/library/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:library] /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/library/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/83af8b8baa2279d9e00a921ddae1bcfb/appcompat-v7-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/83af8b8baa2279d9e00a921ddae1bcfb/appcompat-v7-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/654a7c8cda33c0bf59ba0494f4bc2d1c/support-fragment-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/654a7c8cda33c0bf59ba0494f4bc2d1c/support-fragment-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.github.ozodrukh.CircularReveal:spring-revealmanager:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/50c47b9cb62fac710d91cd70e732dffa/spring-revealmanager-2.1.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.ozodrukh.CircularReveal:spring-revealmanager:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/50c47b9cb62fac710d91cd70e732dffa/spring-revealmanager-2.1.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b48a011b8b0aa6d035b2f3e78d9188d/animated-vector-drawable-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0b48a011b8b0aa6d035b2f3e78d9188d/animated-vector-drawable-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f94579b219cc8d744f6d2262c5d16358/support-core-ui-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/f94579b219cc8d744f6d2262c5d16358/support-core-ui-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a63f2341c20985dfd7f4d9c10764247a/support-core-utils-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a63f2341c20985dfd7f4d9c10764247a/support-core-utils-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/19ba9de4dc0430f104d96facd1dff1da/support-vector-drawable-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/19ba9de4dc0430f104d96facd1dff1da/support-vector-drawable-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/899905d8a4494814eb0ee75836a4eb51/loader-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/899905d8a4494814eb0ee75836a4eb51/loader-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/fb48bba8f19aaed9209b80242b242828/viewpager-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/fb48bba8f19aaed9209b80242b242828/viewpager-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/afb72092c2cb62842f45832614a8ae10/coordinatorlayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/afb72092c2cb62842f45832614a8ae10/coordinatorlayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/368095a50585f5a751c8dedc81a9b01b/drawerlayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/368095a50585f5a751c8dedc81a9b01b/drawerlayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b20eb017c6067d84524c2605acfaafbc/slidingpanelayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b20eb017c6067d84524c2605acfaafbc/slidingpanelayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/db8f549757758c14192f01a9eabcafd7/customview-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/db8f549757758c14192f01a9eabcafd7/customview-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/febd18b7a83220618115aad8cf58469d/swiperefreshlayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/febd18b7a83220618115aad8cf58469d/swiperefreshlayout-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/8557eb428f3b00a968cfbe3c4eaf86fd/asynclayoutinflater-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/8557eb428f3b00a968cfbe3c4eaf86fd/asynclayoutinflater-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/4a1e6602ccfe9c79db5659a249771713/support-compat-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/4a1e6602ccfe9c79db5659a249771713/support-compat-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0c400e0acec2cfbc967a0026fa94df3f/versionedparcelable-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/0c400e0acec2cfbc967a0026fa94df3f/versionedparcelable-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/9b24b88f0334493b1c55b6292679780f/cursoradapter-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/9b24b88f0334493b1c55b6292679780f/cursoradapter-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b39f862c6a3794e845a7620d84172ca1/runtime-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b39f862c6a3794e845a7620d84172ca1/runtime-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/5cd00fdfcafd5b1925ffa9ed72759b0a/documentfile-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/5cd00fdfcafd5b1925ffa9ed72759b0a/documentfile-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/ee9096aabde438b6b1caf17f801eb4e3/localbroadcastmanager-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/ee9096aabde438b6b1caf17f801eb4e3/localbroadcastmanager-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/1cbcd4e02efb1b7506fe94981b3ce586/print-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/1cbcd4e02efb1b7506fe94981b3ce586/print-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/1172d19d55e76f008cdddf8af3884ffc/viewmodel-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/1172d19d55e76f008cdddf8af3884ffc/viewmodel-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/36f7aaeb6066f5dd5e5362b8d234dfad/livedata-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/36f7aaeb6066f5dd5e5362b8d234dfad/livedata-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/df49a8b5a11a3ef61dc4213f3bed828d/livedata-core-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/df49a8b5a11a3ef61dc4213f3bed828d/livedata-core-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b7aa4c916cb0b7cd2e129d5b61ac2098/runtime-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/b7aa4c916cb0b7cd2e129d5b61ac2098/runtime-1.1.1/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/44ad7ba252e16f9ee5c6750c93717039/interpolator-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/44ad7ba252e16f9ee5c6750c93717039/interpolator-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.github.ozodrukh.CircularReveal:circualreveal:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a9abfd774564ff93a8a3ba87e80de828/circualreveal-2.1.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.ozodrukh.CircularReveal:circualreveal:2.1.0] /Users/zhangyuxin/.gradle/wrapper/dists/gradle-4.4-all/caches/transforms-2/files-2.1/a9abfd774564ff93a8a3ba87e80de828/circualreveal-2.1.0/AndroidManifest.xml:6:5-8:41
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		ADDED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/zhangyuxin/Documents/tan90°/PROGRAM/CLEAR-HCI/CLEAR-HCIproject/Side-Menu.Android-master/app/src/main/AndroidManifest.xml
