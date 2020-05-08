@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -25,11 +27,15 @@ import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
 
 import android.Manifest;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -44,13 +50,19 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AMapLocationListener, PoiSearch.OnPoiSearchListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity
+        implements AMapLocationListener, PoiSearch.OnPoiSearchListener, SearchInput.MyListener
+{
 
     private MapView mapView;
     private AMap aMap;
@@ -65,12 +77,15 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
     //搜索
     private AutoCompleteTextView searchText;// 输入搜索关键字
     private String keyWord = "";// 要输入的poi搜索关键字
-    private ProgressDialog progDialog = null;// 搜索时进度条
-    private EditText editCity;// 要输入的城市名字或者城市区号
+    private String editCity;// 要输入的城市名字或者城市区号
     private PoiResult poiResult; // poi返回的结果
     private int currentPage = 0;// 当前页面，从0开始计数
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;// POI搜索
+
+    private poiList poiListFragment;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
 
     String citycode;
 
@@ -82,7 +97,10 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         init();
-//        initSearchView();
+
+        // fragment实例
+        fragmentManager=getSupportFragmentManager();
+
 
         //检查版本是否大于M
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -125,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
             mUiSettings.setCompassEnabled(true);
             aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
 
-            setUpMap();
         }
     }
 
@@ -155,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
             mLocationClient.setLocationOption(mLocationOption);
             //启动定位
             mLocationClient.startLocation();
-//            Log.i("showlocation","success");
         } catch (Exception e) {
 
         }
@@ -247,61 +263,66 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * 设置页面监听
-     */
-    private void setUpMap() {
-        Button searButton = findViewById(R.id.searchButton);
-        searButton.setOnClickListener(this);
-        Button nextButton = findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(this);
-        searchText = findViewById(R.id.keyWord);
-//        searchText.addTextChangedListener((TextWatcher) this);// 添加文本输入框监听事件
-        editCity = findViewById(R.id.city);
-//        aMap.setOnMarkerClickListener((AMap.OnMarkerClickListener) this);// 添加点击marker监听事件
-//        aMap.setInfoWindowAdapter((AMap.InfoWindowAdapter) this);// 添加显示infowindow监听事件
-    }
-
-    /**
-     * 点击搜索按钮
-     */
-    public void searchButton() {
-        keyWord = searchText.getText().toString();
-        if ("".equals(keyWord)) {
-            Toast.makeText(MainActivity.this, "请输入关键词", Toast.LENGTH_SHORT).show();
-            return;
-        } else {
-            doSearchQuery();
-        }
-    }
-
-    /**
-     * 点击下一页按钮
-     */
-    public void nextButton() {
-        if (query != null && poiSearch != null && poiResult != null) {
-            if (poiResult.getPageCount() - 1 > currentPage) {
-                currentPage++;
-                query.setPageNum(currentPage);// 设置查后一页
-                poiSearch.searchPOIAsyn();
-            } else {
-                Toast.makeText(MainActivity.this, "已经是最后一页了", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    /**
+//     * 点击搜索按钮
+//     */
+//    public void searchButton() {
+//        keyWord = searchText.getText().toString();
+//
+//        if ("".equals(keyWord)) {
+//            Toast.makeText(MainActivity.this, "请输入关键词", Toast.LENGTH_SHORT).show();
+//            if (poiListFragment != null) {
+//                fragmentTransaction.hide(poiListFragment);
+//            }
+//        } else {
+//            doSearchQuery();
+//
+//            fragmentTransaction=fragmentManager.beginTransaction();
+//            if(poiListFragment==null){
+//                poiListFragment=new poiList();
+//                fragmentTransaction.add(R.id.fragment_poi_list, poiListFragment);
+//                Log.i("show fragment","success");
+//            }else{
+//                fragmentTransaction.show(poiListFragment);
+//            }
+//            fragmentTransaction.commit();
+//        }
+//    }
+//
+//    /**
+//     * 点击下一页按钮
+//     */
+//    public void nextButton() {
+//        if (query != null && poiSearch != null && poiResult != null) {
+//            if (poiResult.getPageCount() - 1 > currentPage) {
+//                currentPage++;
+//                query.setPageNum(currentPage);// 设置查后一页
+//                poiSearch.searchPOIAsyn();
+//            } else {
+//                Toast.makeText(MainActivity.this, "已经是最后一页了", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     /**
      * 开始进行poi搜索
      */
     protected void doSearchQuery() {
         currentPage = 0;
-        query = new PoiSearch.Query(keyWord, "", editCity.getText().toString());// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
+        query = new PoiSearch.Query(keyWord, "", editCity);// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query.setPageSize(10);// 设置每页最多返回多少条poiitem
         query.setPageNum(currentPage);// 设置查第一页
 
         poiSearch = new PoiSearch(this, query);
         poiSearch.setOnPoiSearchListener(this);
         poiSearch.searchPOIAsyn();
+
+        //第二个参数传入null或者“”代表在全国进行检索，否则按照传入的city进行检索
+//        InputtipsQuery inputquery = new InputtipsQuery(keyWord, editCity.getText().toString());
+//        inputquery.setCityLimit(true);//限制在当前城市
+//        Inputtips inputTips = new Inputtips(MainActivity.this, inputquery);
+//        inputTips.setInputtipsListener(this);
+//        inputTips.requestInputtipsAsyn();
     }
 
     /**
@@ -355,23 +376,56 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            /**
-             * 点击搜索按钮
-             */
-            case R.id.searchButton:
-                searchButton();
-                break;
-            /**
-             * 点击下一页按钮
-             */
-            case R.id.nextButton:
-                nextButton();
-                break;
-            default:
-                break;
+    public void sendContent(String info) {
+        if (info!=null && !"".equals(info)) {
+            keyWord=info;
+
+            fragmentTransaction=fragmentManager.beginTransaction();
+            if(poiListFragment==null){
+                poiListFragment=new poiList();
+                fragmentTransaction.add(R.id.fragment_poi_list, poiListFragment);
+                Log.i("show fragment","success");
+            }else{
+                fragmentTransaction.show(poiListFragment);
+            }
+            fragmentTransaction.commit();
+        }else {
+            Toast.makeText(MainActivity.this, "请输入内容", Toast.LENGTH_SHORT).show();
         }
     }
 
+    @Override
+    public void sendContent_2(String info) {
+        editCity=info;
+        doSearchQuery();
+    }
+
+//    @Override
+//    public void onGetInputtips(List<Tip> tipList, int rCode) {
+//        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+//            List<HashMap<String, String>> listString = new ArrayList<>();
+//            if(tipList != null) {
+//                int size = tipList.size();
+//                for (int i = 0; i < size; i++) {
+//                    Tip tip = tipList.get(i);
+//                    if(tip != null) {
+//                        HashMap<String, String> map = new HashMap<String, String>();
+//                        map.put("name", tipList.get(i).getName());
+//                        map.put("address", tipList.get(i).getDistrict());
+//                        listString.add(map);
+//                    }
+//                }
+//                SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.item_layout,
+//                        new String[]{"name", "address"}, new int[]{R.id.poi_field_id, R.id.poi_value_id});
+//
+//                minputlist.setAdapter(aAdapter);
+//                aAdapter.notifyDataSetChanged();
+//            }
+//
+//        } else {
+//            Toast.makeText(MainActivity.this, rCode, Toast.LENGTH_SHORT).show();
+//        }
+//
+//
+//    }
 }
