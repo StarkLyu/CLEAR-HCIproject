@@ -15,12 +15,15 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
+import com.google.gson.Gson;
 
 
 import android.Manifest;
@@ -31,6 +34,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -46,10 +51,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements AMapLocationListener, PoiSearch.OnPoiSearchListener, View.OnClickListener, TextWatcher
@@ -66,17 +79,21 @@ public class MainActivity extends AppCompatActivity
     //定位蓝点
     MyLocationStyle myLocationStyle;
     //搜索
-    private AutoCompleteTextView searchText;// 输入搜索关键字
     private String keyWord = "";// 要输入的poi搜索关键字
-    private TextView editCity;// 要输入的城市名字或者城市区号
     private PoiResult poiResult; // poi返回的结果
     private int currentPage = 0;// 当前页面，从0开始计数
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;// POI搜索
+
+    private AutoCompleteTextView searchText;// 输入搜索关键字
+    private TextView editCity;// 要输入的城市名字或者城市区号
     private List poiListResult;
     private ListView poiListView;
+    TextView startTimeView, endTimeView, timePeriodView, protectLevelView;  // 输入组件
 
     private boolean poisitionIsChosen;    // 判断是否已经选择地点
+    String nowCity; //现在定位的城市
+    double nowLat, nowLon;  //现在定位的经纬度
 
     //fragment事务
 //    private PoiList poiListFragment;
@@ -84,18 +101,25 @@ public class MainActivity extends AppCompatActivity
 //    FragmentManager fm1;
 //    FragmentTransaction ft1;
 
-    String nowCity;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
+        poiListView = findViewById(R.id.poi_list);
         init();
-        setUpMap();
+        setUpViewListener();
 
+//        if (android.os.Build.VERSION.SDK_INT > 9) {
+//            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//            StrictMode.setThreadPolicy(policy);
+//        }
+
+//        String get= getHttpResult("http://175.24.72.189/index.php?r=user/test");
+//        Log.i("get", get);
 
 //        fm1 =getSupportFragmentManager();
 
@@ -112,9 +136,33 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    ListView.setOnTouchListener(){
+    /*
+        获取后台数据
+     */
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            String val = data.getString("value");
 
-//}
+        }
+    };
+
+    Runnable runnable = new Runnable(){
+        @Override
+        public void run() {
+            String post=getHomepage(nowLat,nowLon,nowCity);
+            Log.i("post request", nowLat+" "+nowLon+" "+nowCity);
+            Log.i("post response",post);
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("value","请求结果");
+
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
+    };
 
     private void init(){
         if(aMap ==null){
@@ -159,7 +207,6 @@ public class MainActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    // TODO:
     private void showLocation() {
         try {
             mLocationClient = new AMapLocationClient(this);
@@ -246,6 +293,11 @@ public class MainActivity extends AppCompatActivity
 
                     Log.i("获取定位时间", df.format(date));
 
+                    new Thread(runnable).start();   // 开子线程与后台交互数据
+
+                    nowLat=amapLocation.getLatitude();
+                    nowLon=amapLocation.getLongitude();
+
                     nowCity =amapLocation.getCity();
                     editCity = findViewById(R.id.city);
                     editCity.setText(nowCity);
@@ -267,8 +319,8 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * 开始进行poi搜索
+    /*
+        开始进行poi搜索
      */
     protected void doSearchQuery() {
 
@@ -289,8 +341,8 @@ public class MainActivity extends AppCompatActivity
 //        inputTips.requestInputtipsAsyn();
     }
 
-    /**
-     * poi没有搜索到数据，返回一些推荐城市的信息
+    /*
+        poi没有搜索到数据，返回一些推荐城市的信息
      */
     private void showSuggestCity(List<SuggestionCity> cities) {
         String infomation = "推荐城市\n";
@@ -318,24 +370,36 @@ public class MainActivity extends AppCompatActivity
                         Log.i("poiItem"+i, item);
                         poiListResult.add(item);
                     }
-                    poisitionIsChosen=false;
+                    poisitionIsChosen=false;    // listview点击事件初始为false
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, poiListResult);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>
+                            (this, android.R.layout.simple_list_item_1, poiListResult);
 
-                    poiListView = findViewById(R.id.poi_list);
                     poiListView.setAdapter(adapter);
-//                    poiListView.setVisibility(View.VISIBLE);
                     //设置listview点击事件
                     poiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            String item = poiItems.get(i).toString();
-                            Toast.makeText(MainActivity.this, item, Toast.LENGTH_SHORT).show();
+                            PoiItem item = poiItems.get(i);
+                            Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
+
+                            //添加一个默认的marker
+                            LatLng latLng = new LatLng(item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    //必须，设置经纬度
+                                    .position(latLng)
+                                    //设置title
+                                    .title(item.getTitle())
+                                    //设置内容
+                                    .snippet(item.getSnippet());
+
+                            aMap.addMarker(markerOptions);
 
                             poisitionIsChosen=true;
-                            searchText.setText(item);
+                            searchText.setText(item.toString());
                         }
                     });
+//                    if (!poisitionIsChosen) poiListView.setVisibility(View.VISIBLE);
 
                     // 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
                     List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
@@ -382,10 +446,10 @@ public class MainActivity extends AppCompatActivity
     }
      */
 
-    /**
-     * 设置页面监听
+    /*
+        设置页面监听
      */
-    private void setUpMap() {
+    private void setUpViewListener() {
         Button searButton = findViewById(R.id.searchButton);
         searButton.setOnClickListener(this);
         Button nextButton = findViewById(R.id.nextButton);
@@ -393,12 +457,17 @@ public class MainActivity extends AppCompatActivity
         searchText = findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
         editCity = findViewById(R.id.city);
-        editCity.setText(nowCity);
-//        aMap.setOnMarkerClickListener((AMap.OnMarkerClickListener) this);// 添加点击marker监听事件
-//        aMap.setInfoWindowAdapter((AMap.InfoWindowAdapter) this);// 添加显示infowindow监听事件
+        editCity.setText(nowCity);  // 城市默认为当前定位的城市
+
+        startTimeView=findViewById(R.id.start_time);
+        endTimeView=findViewById(R.id.end_time);
+        timePeriodView=findViewById(R.id.time_period);
+        protectLevelView=findViewById(R.id.protection_level);
     }
 
-    // 按下返回回到桌面
+    /*
+        按下返回回到桌面
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
@@ -412,13 +481,15 @@ public class MainActivity extends AppCompatActivity
         return super.onKeyDown(keyCode, event);
     }
 
-    // 点击空白处隐藏Listview
+    /*
+        点击空白处隐藏Listview
+     */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             // 隐藏listview布局
-            poiListView = findViewById(R.id.poi_list);
+
             ListView view=poiListView;
             LinearLayout layout=findViewById(R.id.search_input);
 
@@ -433,16 +504,24 @@ public class MainActivity extends AppCompatActivity
                     bottom = location[1] + view.getHeight();
 
             // 判断点击位置是否在view布局范围内
-            if (ev.getRawX() < left || ev.getRawX() > right
-                    || ev.getY() < top || ev.getRawY() > bottom) {
-                // 在这里执行你的操作，我的是判断当前布局显示的话，隐藏掉
-                if (view.getVisibility() == View.VISIBLE) {
+            if (view.getVisibility()==View.VISIBLE){
+                if (ev.getRawX() < left || ev.getRawX() > right
+                        || ev.getY() < top || ev.getRawY() > bottom) {
+                    // 在这里执行你的操作，我的是判断当前布局显示的话，隐藏掉
                     view.setVisibility(View.GONE);
                 }
             }
-            else{
-                view.setVisibility(View.VISIBLE);
-            }
+//            else  {
+//                if (ev.getY() > top || ev.getRawY() < (location2[1]+layout.getHeight())){
+//                    view.setVisibility(View.VISIBLE);
+//                    Log.i("show search result", "点击的是搜索框");
+//                }
+//                else {
+//                    view.setVisibility(View.GONE);
+//                    Log.i("show search result", "点击的是搜索框外的地图");
+//                }
+//            }
+
 
 //            poiListView.setVisibility(View.GONE);
         }
@@ -469,23 +548,33 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * 点击搜索按钮
+    /*
+        点击搜索按钮
      */
     public void searchButton() {
-        keyWord = searchText.getText().toString();
+        String startTime, endTime, timePeriod, protectLevel;
 
-        if ("".equals(keyWord)) {
-            Toast.makeText(MainActivity.this, "请输入关键词", Toast.LENGTH_SHORT).show();
+        startTime=startTimeView.getText().toString();
+        Log.i("start time",startTime);
+        endTime=endTimeView.getText().toString();
+        Log.i("end time", endTime);
+        timePeriod=timePeriodView.getText().toString();
+        Log.i("time period", timePeriod);
+        protectLevel=protectLevelView.getText().toString();
+        Log.i("protection level", protectLevel);
 
-        } else {
-            String city=editCity.getText().toString();
-            doSearchQuery();
-        }
+//        keyWord = searchText.getText().toString();
+//
+//        if ("".equals(keyWord)) {
+//            Toast.makeText(MainActivity.this, "请输入关键词", Toast.LENGTH_SHORT).show();
+//
+//        } else {
+//            doSearchQuery();
+//        }
     }
 
-    /**
-     * 点击下一页按钮
+    /*
+        点击下一页按钮
      */
     public void nextButton() {
         if (query != null && poiSearch != null && poiResult != null) {
@@ -501,7 +590,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        poiListView.setVisibility(View.GONE);
     }
 
     @Override
@@ -519,13 +608,103 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
+        在确认点击条目后，搜索栏会隐藏
+     */
     @Override
     public void afterTextChanged(Editable s) {
         if(poisitionIsChosen){
-            poiListView = findViewById(R.id.poi_list);
             poiListView.setVisibility(View.GONE);
             Log.i("afterTextChanged", "true");
         }
+        else{
+            poiListView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /*
+        处理get请求
+     */
+    public static String getHttpResult(String urlStr){
+        try {
+            URL url=new URL(urlStr);
+            HttpURLConnection connect=(HttpURLConnection)url.openConnection();
+            InputStream input=connect.getInputStream();
+            BufferedReader in = new BufferedReader(new InputStreamReader(input));
+            String line = null;
+            System.out.println(connect.getResponseCode());
+            StringBuffer sb = new StringBuffer();
+            while ((line = in.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+    }
+
+    /*
+        post当前位置，获得病例信息
+     */
+    public static String getHomepage(double lat, double lon, String city){
+
+        String h="http://175.24.72.189/index.php?r=normal/homepage";
+        Map<String,Object> mmap=new LinkedHashMap<>();
+        mmap.put("latitude", lat);
+        mmap.put("longitude", lon);
+        mmap.put("city", city);
+        Gson gson=new Gson();
+        String json=gson.toJson(mmap);
+        PostInfo postInfo=new PostInfo(h,json);
+        return postInfo.postMethod();
+//
+//        try {
+//            Map<String,Object> mmap=new LinkedHashMap<>();
+//            mmap.put("latitude", lat);
+//            mmap.put("longitude", lon);
+//            mmap.put("city", city);
+//            Gson gson=new Gson();
+//            String json=gson.toJson(mmap);
+//            Log.i("json",json);
+//
+////            String content = String.valueOf(object);
+//            URL url=new URL(h);
+//            HttpURLConnection connect=(HttpURLConnection)url.openConnection();
+//            connect.setDoInput(true);
+//            connect.setDoOutput(true);
+//            connect.setRequestMethod("POST");
+//            connect.setUseCaches(false);
+//            final String tokenStr ="Bearer LZPxZSDMEk7s6fZFduU-ZBqf8sTDyT8x";
+//            connect.setRequestProperty("Authorization", tokenStr);
+//            connect.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+//
+//            OutputStream outputStream = connect.getOutputStream();
+//            outputStream.write(json.getBytes());
+//
+//            int response = connect.getResponseCode();
+//            System.out.println(connect);
+//            if (response== HttpURLConnection.HTTP_OK)
+//            {
+//                System.out.println(response);
+//                InputStream input=connect.getInputStream();
+//                BufferedReader in = new BufferedReader(new InputStreamReader(input));
+//                String line = null;
+//                System.out.println(connect.getResponseCode());
+//                StringBuffer sb = new StringBuffer();
+//                while ((line = in.readLine()) != null) {
+//                    sb.append(line);
+//                }
+//                return sb.toString();
+//            }
+//            else {
+//                System.out.println(response);
+//                return "not exsits";
+//            }
+//        } catch (Exception e) {
+//            Log.e("e:", String.valueOf(e));
+//            return "internet errar";
+//        }
     }
 
 /*

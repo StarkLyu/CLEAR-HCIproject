@@ -11,12 +11,13 @@
         android:id="@+id/search_input"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5.0dip" >
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="5dp"
+        android:background="#ffffff">
 
         <AutoCompleteTextView
             android:id="@+id/keyWord"
-            android:layout_marginTop="50dp"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:completionThreshold="1"
@@ -32,30 +33,14 @@
 
         <EditText
             android:id="@+id/city"
-            android:layout_marginTop="50dp"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="5.0dip"
             android:hint="请输入城市"
-            android:text="北京"
             android:imeOptions="actionDone"
             android:singleLine="true"
             android:textColor="#000000"
             android:textSize="16.0sp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_marginTop="100dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="开始搜索" />
 
         <Button
             android:id="@+id/nextButton"
@@ -63,6 +48,75 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="下一页" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="90dp"
+        android:layout_marginLeft="5dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff">
+
+        <EditText
+            android:id="@+id/start_time"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="预计开始时间"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="16.0sp"/>
+
+        <EditText
+            android:id="@+id/end_time"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="预计结束时间"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="16.0sp"/>
+
+        <EditText
+            android:id="@+id/time_period"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="逗留时间"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="16.0sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="130dp"
+        android:background="#ffffff">
+
+        <EditText
+            android:id="@+id/protection_level"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="防护等级"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="16.0sp"/>
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="开始搜索" />
     </LinearLayout>
 <!--    <fragment-->
 <!--        android:layout_marginTop="50dp"-->
@@ -72,7 +126,7 @@
 <!--        android:name="com.example.clear.SearchInput"/>-->
     <ListView
         android:id="@+id/poi_list"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="200dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff">

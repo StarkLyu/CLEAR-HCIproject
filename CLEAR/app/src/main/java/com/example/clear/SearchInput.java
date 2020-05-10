@@ -34,6 +34,7 @@ import java.util.List;
 
 
 /**
+ * 现在是废弃状态
  * A simple {@link Fragment} subclass.
  * Use the {@link SearchInput#newInstance} factory method to
  * create an instance of this fragment.

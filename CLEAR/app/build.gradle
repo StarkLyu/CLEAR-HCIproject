@@ -41,6 +41,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.qmuiteam:qmui:2.0.0-alpha07'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
 //    //PushSDK必须依赖基础组件库，所以需要加入对应依赖
 //    implementation 'com.umeng.umsdk:common:2.1.0'
