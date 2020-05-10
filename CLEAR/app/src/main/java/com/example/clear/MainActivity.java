@@ -19,7 +19,6 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
@@ -71,6 +70,9 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements AMapLocationListener, PoiSearch.OnPoiSearchListener, View.OnClickListener, TextWatcher
 {
+    // protection level 的区间划分
+    private double level_1=1000;
+    private double level_2=5000;
 
     private MapView mapView;
     private AMap aMap;
@@ -82,51 +84,42 @@ public class MainActivity extends AppCompatActivity
 
     //定位蓝点
     MyLocationStyle myLocationStyle;
-    //搜索
+    //地点搜索
     private String keyWord = "";// 要输入的poi搜索关键字
     private PoiResult poiResult; // poi返回的结果
     private int currentPage = 0;// 当前页面，从0开始计数
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;// POI搜索
 
+    // 组件
     private AutoCompleteTextView searchText;// 输入搜索关键字
     private TextView editCity;// 要输入的城市名字或者城市区号
-    private List poiListResult;
     private ListView poiListView;
     TextView startTimeView, endTimeView, timePeriodView, protectLevelView;  // 输入组件
 
     private boolean poisitionIsChosen;    // 判断是否已经选择地点
     String nowCity; //现在定位的城市
     double nowLat, nowLon;  //现在定位的经纬度
-    LatLonPoint focusPoint;  //查找聚焦的点
 
-    //fragment事务
-//    private PoiList poiListFragment;
-//    private SearchInput searchInput;
-//    FragmentManager fm1;
-//    FragmentTransaction ft1;
+    //搜索周围病例的request
+    PositionInfo focusPoi;  //查找的位置
+    String startTime, endTime;
+    int timePeriod, protectionLevel;
+    boolean sendNotice;
+
+    Thread thread1, thread2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        thread1=new Thread(runnable);
 
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         poiListView = findViewById(R.id.poi_list);
         init();
         setUpViewListener();
-
-//        if (android.os.Build.VERSION.SDK_INT > 9) {
-//            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//            StrictMode.setThreadPolicy(policy);
-//        }
-
-//        String get= getHttpResult("http://175.24.72.189/index.php?r=user/test");
-//        Log.i("get", get);
-
-//        fm1 =getSupportFragmentManager();
 
         //检查版本是否大于M
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -175,8 +168,18 @@ public class MainActivity extends AppCompatActivity
                     double level=obj.getDouble("level");
 //                    Log.i("one position", i+" "+lat+" "+lon+" "+level);
 
+                    Bitmap virusBitmap;
 //                    自定义marker
-                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
+                    if (level<level_1){
+                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
+                    }
+                    else if(level<level_2){
+                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                    }
+                    else{
+                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
+                    }
+//                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
                     virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
                     BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
                     LatLng latLng = new LatLng(lat, lon);
@@ -199,6 +202,93 @@ public class MainActivity extends AppCompatActivity
             handler.sendMessage(msg);
         }
     };
+
+    Handler handler2= new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+
+        }
+    };
+
+    Runnable runnable2=new Runnable(){
+        @Override
+        public void run() {
+            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, false);
+            Log.i("post response",post);
+            final List searchResult = new ArrayList<>();
+            aMap.clear();
+
+//            解析json
+            try {
+                JSONArray jsonArray=new JSONArray(post);
+                int length=jsonArray.length();
+                for (int i=0; i<length; i++){
+                    JSONObject obj=jsonArray.getJSONObject(i);
+                    String p_starttime=obj.getString("startTime");
+                    String p_endtime=obj.getString("endTime");
+                    int p_period=obj.getInt("timePeriod");
+                    int p_plevel=obj.getInt("protectionLevel");
+                    String p_poiid=obj.getString("positionID");
+                    JSONObject p_position=obj.getJSONObject("position");
+                    String p_pname=p_position.getString("positionName");
+                    double lat=p_position.getDouble("latitude");
+                    double lon=p_position.getDouble("longitude");
+                    String city=p_position.getString("city");
+                    PositionInfo p_info=new PositionInfo(p_poiid, p_pname, lat, lon, city);
+                    String searchAresult=p_pname+" "+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
+                    searchResult.add(searchAresult);
+
+
+//                    Bitmap virusBitmap;
+////                    自定义marker
+//                    if (level<level_1){
+//                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
+//                    }
+//                    else if(level<level_2){
+//                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+//                    }
+//                    else{
+//                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
+//                    }
+////                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
+//                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+//                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+                    LatLng latLng = new LatLng(lat, lon);
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            //必须，设置经纬度
+                            .position(latLng);
+//                    markerOptions.icon(virusIcon);
+
+                    aMap.addMarker(markerOptions);
+                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //展示在listview中
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>
+                            (MainActivity.this, android.R.layout.simple_list_item_1, searchResult);
+                    ListView resultListView;
+                    resultListView=findViewById(R.id.search_result_list);
+                    resultListView.setAdapter(adapter);
+                    resultListView.setVisibility(View.GONE);
+                }
+            });
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("value","请求结果");
+
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
+    };
+
+
 
     private void init(){
         if(aMap ==null){
@@ -255,6 +345,7 @@ public class MainActivity extends AppCompatActivity
             mLocationClient.setLocationOption(mLocationOption);
             //启动定位
             mLocationClient.startLocation();
+
         } catch (Exception e) {
 
         }
@@ -329,7 +420,9 @@ public class MainActivity extends AppCompatActivity
 
                     Log.i("获取定位时间", df.format(date));
 
-                    new Thread(runnable).start();   // 开子线程与后台交互数据
+                    // 开子线程与后台交互数据
+
+                    thread1.start();
 
                     nowLat=amapLocation.getLatitude();
                     nowLon=amapLocation.getLongitude();
@@ -394,7 +487,7 @@ public class MainActivity extends AppCompatActivity
                     final List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
 
                     //将list数据传到poi list fragment中
-                    poiListResult=new ArrayList<>();
+                    List poiListResult = new ArrayList<>();
                     for (int i=0; i<poiItems.size(); i++){
                         String item=poiItems.get(i).toString();
 //                        Log.i("poiItem"+i, item);
@@ -411,12 +504,19 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             PoiItem item = poiItems.get(i);
-                            Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
 
                             Log.i("choose position",
                                     item.getPoiId()+" "+item.getLatLonPoint().getLatitude()+" "+item.getLatLonPoint().getLongitude()+" "+item.getTitle()+" "+item.getCityName());
 
-                            focusPoint=item.getLatLonPoint();
+                            // 存储搜索的地点信息
+                            focusPoi=new PositionInfo();
+                            focusPoi.setPositionID(item.getPoiId());
+                            focusPoi.setPositionName(item.getTitle());
+                            focusPoi.setLatitude(item.getLatLonPoint().getLatitude());
+                            focusPoi.setLongitude(item.getLatLonPoint().getLongitude());
+                            focusPoi.setCity(item.getCityName());
+
                             poisitionIsChosen=true;
                             searchText.setText(item.toString());
                         }
@@ -425,11 +525,11 @@ public class MainActivity extends AppCompatActivity
                     // 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
                     List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
                     if (poiItems != null && poiItems.size() > 0) {
-                        aMap.clear();// 清理之前的图标
-                        PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
-                        poiOverlay.removeFromMap();
-                        poiOverlay.addToMap();
-                        poiOverlay.zoomToSpan();
+//                        aMap.clear();// 清理之前的图标
+//                        PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
+//                        poiOverlay.removeFromMap();
+//                        poiOverlay.addToMap();
+//                        poiOverlay.zoomToSpan();
                     } else if (suggestionCities != null
                             && suggestionCities.size() > 0) {
                         showSuggestCity(suggestionCities);
@@ -450,23 +550,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    /*
-    @Override
-    public void sendContent(String info) {
-        if (info!=null && !"".equals(info)) {
-            keyWord=info;
-        }else {
-            Toast.makeText(MainActivity.this, "请输入内容", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void sendContent_2(String info) {
-//        editCity=info;
-        doSearchQuery();
-    }
-     */
-
     /**
      *设置页面监听
      */
@@ -477,6 +560,9 @@ public class MainActivity extends AppCompatActivity
         nextButton.setOnClickListener(this);
         Button searchIconButton =findViewById(R.id.search_icon);
         searchIconButton.setOnClickListener(this);
+        Button changeToListButton =findViewById(R.id.change_to_list);
+        changeToListButton.setOnClickListener(this);
+
         searchText = findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
         editCity = findViewById(R.id.city);
@@ -564,6 +650,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.search_icon:
                 searchIconButton();
+                break;
+            case R.id.change_to_list:
+                changeResultToList();
+                break;
             default:
                 break;
         }
@@ -573,21 +663,22 @@ public class MainActivity extends AppCompatActivity
      *点击搜索按钮
      */
     public void searchButton() {
-        String startTime, endTime, timePeriod, protectLevel;
 
         startTime=startTimeView.getText().toString();
         Log.i("start time",startTime);
         endTime=endTimeView.getText().toString();
         Log.i("end time", endTime);
-        timePeriod=timePeriodView.getText().toString();
-        Log.i("time period", timePeriod);
-        protectLevel=protectLevelView.getText().toString();
-        Log.i("protection level", protectLevel);
+        timePeriod=Integer.parseInt(timePeriodView.getText().toString());
+        Log.i("time period", timePeriod+"");
+        protectionLevel=Integer.parseInt(protectLevelView.getText().toString());
+        Log.i("protection level", protectionLevel+"");
 
+        thread2=new Thread(runnable2);
+        thread2.start();
     }
 
     /**
-     *点击下一页按钮
+     * 点击下一页按钮
      */
     public void nextButton() {
         if (query != null && poiSearch != null && poiResult != null) {
@@ -602,7 +693,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *点击search icon
+     * 点击search icon
      */
     public void searchIconButton(){
         LinearLayout layout=findViewById(R.id.whole_search);
@@ -615,6 +706,22 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * 点击以列表展示按钮
+     */
+    public void changeResultToList(){
+        ListView resultListView;
+        resultListView=findViewById(R.id.search_result_list);
+        if (resultListView.getVisibility()==View.VISIBLE){
+            resultListView.setVisibility(View.GONE);
+            Log.i("search result", "gone");
+        }
+        else{
+            resultListView.setVisibility(View.VISIBLE);
+            Log.i("search result", "visible");
+        }
+}
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         poiListView.setVisibility(View.GONE);
@@ -625,14 +732,14 @@ public class MainActivity extends AppCompatActivity
         String content=s.toString().trim();//获取自动提示输入框的内容
         if ("".equals(content)) {
             Toast.makeText(this, "请输入关键词", Toast.LENGTH_SHORT).show();
-            aMap.clear();
+//            aMap.clear();
         }
         else {
             keyWord=content;
             String city = editCity.getText().toString();
             if (poisitionIsChosen) {
-                aMap.clear();
-                LatLng latLng = new LatLng(focusPoint.getLatitude(), focusPoint.getLongitude());
+//                aMap.clear();
+                LatLng latLng = new LatLng(focusPoi.getLatitude(), focusPoi.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions()
                         //必须，设置经纬度
                         .position(latLng);
@@ -701,32 +808,24 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-/*
-    @Override
-    public void onGetInputtips(List<Tip> tipList, int rCode) {
-        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
-            List<HashMap<String, String>> listString = new ArrayList<>();
-            if(tipList != null) {
-                int size = tipList.size();
-                for (int i = 0; i < size; i++) {
-                    Tip tip = tipList.get(i);
-                    if(tip != null) {
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        map.put("name", tipList.get(i).getName());
-                        map.put("address", tipList.get(i).getDistrict());
-                        listString.add(map);
-                    }
-                }
-                SimpleAdapter aAdapter = new SimpleAdapter(getApplicationContext(), listString, R.layout.item_layout,
-                        new String[]{"name", "address"}, new int[]{R.id.poi_field_id, R.id.poi_value_id});
+    /**
+     *post search的地点，获得病例信息
+     */
+    public static String getSearchPosition(PositionInfo positionInfo, String starttime, String endtime, int period, int protectionLevel, Boolean notice){
 
-                minputlist.setAdapter(aAdapter);
-                aAdapter.notifyDataSetChanged();
-            }
+        String h="http://175.24.72.189/index.php?r=normal/search";
+        Map<String,Object> mmap=new LinkedHashMap<>();
+        mmap.put("position", positionInfo);
+        mmap.put("startTime", starttime);
+        mmap.put("endTime", endtime);
+        mmap.put("timePeriod", period);
+        mmap.put("protectionLevel",protectionLevel);
+        mmap.put("sendNotice",notice);
+        Gson gson=new Gson();
+        String json=gson.toJson(mmap);
+        PostInfo postInfo=new PostInfo(h,json);
+        return postInfo.postMethod();
 
-        } else {
-            Toast.makeText(MainActivity.this, rCode, Toast.LENGTH_SHORT).show();
-        }
     }
-    */
+
 }

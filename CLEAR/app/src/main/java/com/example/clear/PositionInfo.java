@@ -7,6 +7,14 @@ public class PositionInfo {
     double longitude;
     String city;
 
+    public PositionInfo() {
+        this.positionID="";
+        this.positionName="";
+        this.latitude=0.0;
+        this.longitude=0.0;
+        this.city="";
+    }
+
     public PositionInfo(String positionID, String positionName, double latitude, double longitude, String city){
         this.positionID=positionID;
         this.positionName=positionName;
