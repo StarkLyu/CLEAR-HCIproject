@@ -70,6 +70,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/fragment_search_input"
         android:name="com.example.clear.SearchInput"/>
+<!--    <LinearLayout-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/fragment_search_input"-->
+<!--        android:orientation="horizontal" />-->
     <LinearLayout
         android:layout_marginTop="150dp"
         android:layout_width="match_parent"

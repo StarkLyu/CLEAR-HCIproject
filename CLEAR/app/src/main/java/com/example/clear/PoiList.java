@@ -1,10 +1,8 @@
 package com.example.clear;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -13,22 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-
-import com.amap.api.services.core.PoiItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link poiList#newInstance} factory method to
+ * Use the {@link PoiList#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class poiList extends Fragment {
+public class PoiList extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,13 +31,10 @@ public class poiList extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    List<PoiItem> poiList;
-    private List<HashMap<String, String>> listString = new ArrayList<>();
-    private ListView minputlist;
-    private String[] data = { "Apple", "Banana", "Orange", "Watermelon",
-            "Pear", "Grape", "Pineapple", "Strawberry", "Cherry", "Mango" };
+    private List poiListResult;
+    private ListView poiListView;
 
-    public poiList() {
+    public PoiList() {
         // Required empty public constructor
     }
 
@@ -57,8 +47,8 @@ public class poiList extends Fragment {
      * @return A new instance of fragment poiList.
      */
     // TODO: Rename and change types and number of parameters
-    public static poiList newInstance(String param1, String param2) {
-        poiList fragment = new poiList();
+    public static PoiList newInstance(String param1, String param2) {
+        PoiList fragment = new PoiList();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -76,28 +66,44 @@ public class poiList extends Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        poiListResult = ((MainActivity) activity).getTitles();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_poi_list, container, false);
 
-        Log.i("ListView", "create success");
+//        得到activity中传来的Poi数据
+//        Bundle bundle = this.getArguments();
+//        String str=bundle.getString("test");
+//        Log.i("test", str);
+//        if(bundle != null) {
+//            poiList = bundle.getParcelableArrayList("poiItems");
+//            Log.i("size of poiList", poiList.size()+"");
+//        }
+//        else {
+//            Log.i("poiList","is null");
+//        }
 
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put("name", "name");
-        map.put("address", "address");
-        listString.add(map);
+
+        List list=new ArrayList();
+        for (int i = 0; i< poiListResult.size(); i++){
+            list.add(poiListResult.get(i));
+        }
+
+        Log.i("poi ListView", "create success");
 
 //        SimpleAdapter aAdapter = new SimpleAdapter(getContext(), listString, R.layout.fragment_poi_list_item,
 //                new String[]{"name", "address"}, new int[]{R.id.poi_field_id, R.id.poi_value_id});
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                getActivity(), android.R.layout.simple_list_item_1, data);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, list);
 
-//        View account = View.inflate(getContext(), R.layout.fragment_poi_list, null);
-        minputlist= v.findViewById(R.id.poi_list);
-
-        minputlist.setAdapter(adapter);
+        poiListView = v.findViewById(R.id.poi_list);
+        poiListView.setAdapter(adapter);
 //        adapter.notifyDataSetChanged();
 
         return v;

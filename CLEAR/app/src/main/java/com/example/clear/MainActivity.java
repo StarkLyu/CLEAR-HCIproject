@@ -2,9 +2,9 @@ package com.example.clear;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -13,51 +13,33 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
-import com.amap.api.services.geocoder.GeocodeSearch;
-import com.amap.api.services.help.Inputtips;
-import com.amap.api.services.help.InputtipsQuery;
-import com.amap.api.services.help.Tip;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
 
 import android.Manifest;
-import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -82,10 +64,13 @@ public class MainActivity extends AppCompatActivity
     private int currentPage = 0;// 当前页面，从0开始计数
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;// POI搜索
+    private List poiListResult;
 
-    private poiList poiListFragment;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
+    //fragment事务
+    private PoiList poiListFragment;
+//    private SearchInput searchInput;
+    FragmentManager fm1;
+    FragmentTransaction ft1;
 
     String citycode;
 
@@ -98,9 +83,14 @@ public class MainActivity extends AppCompatActivity
         mapView.onCreate(savedInstanceState);
         init();
 
-        // fragment实例
-        fragmentManager=getSupportFragmentManager();
-
+        fm1 =getSupportFragmentManager();
+        // 加载search input fragment
+//        FragmentManager fm2=getSupportFragmentManager();
+//        FragmentTransaction ft2=fm2.beginTransaction();
+//        searchInput=new SearchInput();
+//        ft2.add(R.id.fragment_search_input, searchInput);
+//        ft2.show(searchInput);
+//        ft2.commit();
 
         //检查版本是否大于M
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -142,7 +132,6 @@ public class MainActivity extends AppCompatActivity
             mUiSettings.setZoomControlsEnabled(false);
             mUiSettings.setCompassEnabled(true);
             aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-
         }
     }
 
@@ -346,9 +335,30 @@ public class MainActivity extends AppCompatActivity
                     poiResult = result;
                     // 取得搜索到的poiitems有多少页
                     List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-                    List<SuggestionCity> suggestionCities = poiResult
-                            .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
 
+                    //将list数据传到poi list fragment中
+                    poiListResult=new ArrayList<>();
+                    for (int i=0; i<poiItems.size(); i++){
+                        String item=poiItems.get(i).toString();
+                        Log.i("poiItem"+i, item);
+                        poiListResult.add(item);
+                    }
+
+                    // 加载poi list fragment
+                    ft1 = fm1.beginTransaction();
+                    if(poiListFragment==null){
+                        poiListFragment=new PoiList();
+//                        ft1.add(R.id.fragment_poi_list, poiListFragment);
+//                        Log.i("show fragment poi list","success");
+                    }
+//                    else{
+//                        ft1.show(poiListFragment);
+//                    }
+                    ft1.replace(R.id.fragment_poi_list, poiListFragment);
+                    ft1.commit();
+
+                    // 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
+                    List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
                     if (poiItems != null && poiItems.size() > 0) {
                         aMap.clear();// 清理之前的图标
                         PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
@@ -380,15 +390,15 @@ public class MainActivity extends AppCompatActivity
         if (info!=null && !"".equals(info)) {
             keyWord=info;
 
-            fragmentTransaction=fragmentManager.beginTransaction();
-            if(poiListFragment==null){
-                poiListFragment=new poiList();
-                fragmentTransaction.add(R.id.fragment_poi_list, poiListFragment);
-                Log.i("show fragment","success");
-            }else{
-                fragmentTransaction.show(poiListFragment);
-            }
-            fragmentTransaction.commit();
+//            ft1 = fm1.beginTransaction();
+//            if(poiListFragment==null){
+//                poiListFragment=new PoiList();
+//                ft1.add(R.id.fragment_poi_list, poiListFragment);
+//                Log.i("show fragment poi list","success");
+//            }else{
+//                ft1.show(poiListFragment);
+//            }
+//            fragmentTransaction.commit();
         }else {
             Toast.makeText(MainActivity.this, "请输入内容", Toast.LENGTH_SHORT).show();
         }
@@ -398,6 +408,11 @@ public class MainActivity extends AppCompatActivity
     public void sendContent_2(String info) {
         editCity=info;
         doSearchQuery();
+    }
+
+    //宿主activity中的getTitles()方法
+    public List getTitles(){
+        return poiListResult;
     }
 
 //    @Override
