@@ -19,6 +19,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.AMapException;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity
     private boolean poisitionIsChosen;    // 判断是否已经选择地点
     String nowCity; //现在定位的城市
     double nowLat, nowLon;  //现在定位的经纬度
+    LatLonPoint focusPoint;  //查找聚焦的点
 
     //fragment事务
 //    private PoiList poiListFragment;
@@ -139,8 +141,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*
-        获取后台数据
+    /**
+     *获取后台数据
      */
     Handler handler = new Handler(){
         @Override
@@ -152,6 +154,9 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    /**
+     * 处理当前定位的请求
+     */
     Runnable runnable = new Runnable(){
         @Override
         public void run() {
@@ -201,7 +206,7 @@ public class MainActivity extends AppCompatActivity
             mUiSettings=aMap.getUiSettings();
 
             //设置地图的放缩级别
-            aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+            aMap.moveCamera(CameraUpdateFactory.zoomTo(14));
 
             //蓝点初始化
             myLocationStyle = new MyLocationStyle();
@@ -350,8 +355,8 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
     }
 
-    /*
-        开始进行poi搜索
+    /**
+     *开始进行poi搜索
      */
     protected void doSearchQuery() {
 
@@ -364,16 +369,10 @@ public class MainActivity extends AppCompatActivity
         poiSearch.setOnPoiSearchListener(this);
         poiSearch.searchPOIAsyn();
 
-        //第二个参数传入null或者“”代表在全国进行检索，否则按照传入的city进行检索
-//        InputtipsQuery inputquery = new InputtipsQuery(keyWord, editCity.getText().toString());
-//        inputquery.setCityLimit(true);//限制在当前城市
-//        Inputtips inputTips = new Inputtips(MainActivity.this, inputquery);
-//        inputTips.setInputtipsListener(this);
-//        inputTips.requestInputtipsAsyn();
     }
 
-    /*
-        poi没有搜索到数据，返回一些推荐城市的信息
+    /**
+     *poi没有搜索到数据，返回一些推荐城市的信息
      */
     private void showSuggestCity(List<SuggestionCity> cities) {
         String infomation = "推荐城市\n";
@@ -402,10 +401,10 @@ public class MainActivity extends AppCompatActivity
                         poiListResult.add(item);
                     }
                     poisitionIsChosen=false;    // listview点击事件初始为false
+//                    Log.i("check line", "poi search");
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>
                             (this, android.R.layout.simple_list_item_1, poiListResult);
-
                     poiListView.setAdapter(adapter);
                     //设置listview点击事件
                     poiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -417,11 +416,11 @@ public class MainActivity extends AppCompatActivity
                             Log.i("choose position",
                                     item.getPoiId()+" "+item.getLatLonPoint().getLatitude()+" "+item.getLatLonPoint().getLongitude()+" "+item.getTitle()+" "+item.getCityName());
 
+                            focusPoint=item.getLatLonPoint();
                             poisitionIsChosen=true;
                             searchText.setText(item.toString());
                         }
                     });
-//                    if (!poisitionIsChosen) poiListView.setVisibility(View.VISIBLE);
 
                     // 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
                     List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
@@ -468,8 +467,8 @@ public class MainActivity extends AppCompatActivity
     }
      */
 
-    /*
-        设置页面监听
+    /**
+     *设置页面监听
      */
     private void setUpViewListener() {
         Button searButton = findViewById(R.id.search_button);
@@ -489,8 +488,8 @@ public class MainActivity extends AppCompatActivity
         protectLevelView=findViewById(R.id.protection_level);
     }
 
-    /*
-        按下返回回到桌面
+    /**
+     * 按下返回回到桌面
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -505,8 +504,8 @@ public class MainActivity extends AppCompatActivity
         return super.onKeyDown(keyCode, event);
     }
 
-    /*
-        点击空白处隐藏Listview
+    /**
+     * 点击空白处隐藏Listview
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -570,8 +569,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*
-        点击搜索按钮
+    /**
+     *点击搜索按钮
      */
     public void searchButton() {
         String startTime, endTime, timePeriod, protectLevel;
@@ -587,8 +586,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    /*
-        点击下一页按钮
+    /**
+     *点击下一页按钮
      */
     public void nextButton() {
         if (query != null && poiSearch != null && poiResult != null) {
@@ -602,8 +601,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*
-        点击search icon
+    /**
+     *点击search icon
      */
     public void searchIconButton(){
         LinearLayout layout=findViewById(R.id.whole_search);
@@ -631,28 +630,40 @@ public class MainActivity extends AppCompatActivity
         else {
             keyWord=content;
             String city = editCity.getText().toString();
-            doSearchQuery();
+            if (poisitionIsChosen) {
+                aMap.clear();
+                LatLng latLng = new LatLng(focusPoint.getLatitude(), focusPoint.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions()
+                        //必须，设置经纬度
+                        .position(latLng);
+                aMap.addMarker(markerOptions);
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
+
+            }else{
+                doSearchQuery();
+            }
             Log.i("城市", city);
             Log.i("自动提示框", content);
         }
     }
 
-    /*
-        在确认点击条目后，搜索栏会隐藏
+    /**
+     *在确认点击条目后，搜索栏会隐藏
      */
     @Override
     public void afterTextChanged(Editable s) {
         if(poisitionIsChosen){
             poiListView.setVisibility(View.GONE);
-            Log.i("afterTextChanged", "true");
+            poisitionIsChosen=false;
+//            Log.i("afterTextChanged", "true");
         }
         else{
             poiListView.setVisibility(View.VISIBLE);
         }
     }
 
-    /*
-        处理get请求
+    /**
+     *处理get请求
      */
     public static String getHttpResult(String urlStr){
         try {
@@ -673,8 +684,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*
-        post当前位置，获得病例信息
+    /**
+     *post当前位置，获得病例信息
      */
     public static String getHomepage(double lat, double lon, String city){
 
