@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,21 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
-
-import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.core.SuggestionCity;
-import com.amap.api.services.help.Inputtips;
-import com.amap.api.services.help.InputtipsQuery;
-import com.amap.api.services.help.Tip;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 
 /**
@@ -120,9 +104,9 @@ public class SearchInput extends Fragment
      * 设置页面监听
      */
     private void setUpMap() {
-        Button searButton = v.findViewById(R.id.searchButton);
+        Button searButton = v.findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
-        Button nextButton = v.findViewById(R.id.nextButton);
+        Button nextButton = v.findViewById(R.id.next_button);
         nextButton.setOnClickListener(this);
         searchText = v.findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
@@ -172,13 +156,13 @@ public class SearchInput extends Fragment
             /**
              * 点击搜索按钮
              */
-            case R.id.searchButton:
+            case R.id.search_button:
                 searchButton();
                 break;
             /**
              * 点击下一页按钮
              */
-            case R.id.nextButton:
+            case R.id.next_button:
                 nextButton();
                 break;
             default:

@@ -51,10 +51,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -155,6 +158,34 @@ public class MainActivity extends AppCompatActivity
             String post=getHomepage(nowLat,nowLon,nowCity);
             Log.i("post request", nowLat+" "+nowLon+" "+nowCity);
             Log.i("post response",post);
+
+//            解析json
+            try {
+                JSONArray jsonArray=new JSONArray(post);
+                int length=jsonArray.length();
+                for (int i=0; i<length; i++){
+                    JSONObject obj=jsonArray.getJSONObject(i);
+                    double lat=obj.getDouble("latitude");
+                    double lon=obj.getDouble("longitude");
+                    double level=obj.getDouble("level");
+//                    Log.i("one position", i+" "+lat+" "+lon+" "+level);
+
+//                    自定义marker
+                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
+                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+                    LatLng latLng = new LatLng(lat, lon);
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            //必须，设置经纬度
+                            .position(latLng);
+                    markerOptions.icon(virusIcon);
+
+                    aMap.addMarker(markerOptions);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             Message msg = new Message();
             Bundle data = new Bundle();
             data.putString("value","请求结果");
@@ -176,9 +207,9 @@ public class MainActivity extends AppCompatActivity
             myLocationStyle = new MyLocationStyle();
             myLocationStyle.showMyLocation(true);
 //            自定义定位图标
-            Bitmap background = BitmapFactory.decodeResource(getResources(),R.drawable.location);
-            background= Bitmap.createScaledBitmap(background, 100, 100, false);
-            BitmapDescriptor myLocationIcon = BitmapDescriptorFactory.fromBitmap(background);
+            Bitmap locateBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.location);
+            locateBitmap= Bitmap.createScaledBitmap(locateBitmap, 100, 100, false);
+            BitmapDescriptor myLocationIcon = BitmapDescriptorFactory.fromBitmap(locateBitmap);
             myLocationStyle.myLocationIcon(myLocationIcon);
             myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 自定义精度范围的圆形边框颜色
             myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));//圆圈的颜色,设为透明的时候就可以去掉园区区域了
@@ -367,7 +398,7 @@ public class MainActivity extends AppCompatActivity
                     poiListResult=new ArrayList<>();
                     for (int i=0; i<poiItems.size(); i++){
                         String item=poiItems.get(i).toString();
-                        Log.i("poiItem"+i, item);
+//                        Log.i("poiItem"+i, item);
                         poiListResult.add(item);
                     }
                     poisitionIsChosen=false;    // listview点击事件初始为false
@@ -383,17 +414,8 @@ public class MainActivity extends AppCompatActivity
                             PoiItem item = poiItems.get(i);
                             Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
 
-                            //添加一个默认的marker
-                            LatLng latLng = new LatLng(item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
-                            MarkerOptions markerOptions = new MarkerOptions()
-                                    //必须，设置经纬度
-                                    .position(latLng)
-                                    //设置title
-                                    .title(item.getTitle())
-                                    //设置内容
-                                    .snippet(item.getSnippet());
-
-                            aMap.addMarker(markerOptions);
+                            Log.i("choose position",
+                                    item.getPoiId()+" "+item.getLatLonPoint().getLatitude()+" "+item.getLatLonPoint().getLongitude()+" "+item.getTitle()+" "+item.getCityName());
 
                             poisitionIsChosen=true;
                             searchText.setText(item.toString());
@@ -450,10 +472,12 @@ public class MainActivity extends AppCompatActivity
         设置页面监听
      */
     private void setUpViewListener() {
-        Button searButton = findViewById(R.id.searchButton);
+        Button searButton = findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
-        Button nextButton = findViewById(R.id.nextButton);
+        Button nextButton = findViewById(R.id.next_button);
         nextButton.setOnClickListener(this);
+        Button searchIconButton =findViewById(R.id.search_icon);
+        searchIconButton.setOnClickListener(this);
         searchText = findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
         editCity = findViewById(R.id.city);
@@ -531,18 +555,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            /**
-             * 点击搜索按钮
-             */
-            case R.id.searchButton:
+            //点击搜索按钮
+            case R.id.search_button:
                 searchButton();
                 break;
-            /**
-             * 点击下一页按钮
-             */
-            case R.id.nextButton:
+            //点击下一页按钮
+            case R.id.next_button:
                 nextButton();
                 break;
+            case R.id.search_icon:
+                searchIconButton();
             default:
                 break;
         }
@@ -563,14 +585,6 @@ public class MainActivity extends AppCompatActivity
         protectLevel=protectLevelView.getText().toString();
         Log.i("protection level", protectLevel);
 
-//        keyWord = searchText.getText().toString();
-//
-//        if ("".equals(keyWord)) {
-//            Toast.makeText(MainActivity.this, "请输入关键词", Toast.LENGTH_SHORT).show();
-//
-//        } else {
-//            doSearchQuery();
-//        }
     }
 
     /*
@@ -588,6 +602,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
+        点击search icon
+     */
+    public void searchIconButton(){
+        LinearLayout layout=findViewById(R.id.whole_search);
+        if (layout.getVisibility()==View.VISIBLE){
+            layout.setVisibility(View.GONE);
+        }
+        else{
+            layout.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         poiListView.setVisibility(View.GONE);
@@ -598,6 +626,7 @@ public class MainActivity extends AppCompatActivity
         String content=s.toString().trim();//获取自动提示输入框的内容
         if ("".equals(content)) {
             Toast.makeText(this, "请输入关键词", Toast.LENGTH_SHORT).show();
+            aMap.clear();
         }
         else {
             keyWord=content;
@@ -658,53 +687,7 @@ public class MainActivity extends AppCompatActivity
         String json=gson.toJson(mmap);
         PostInfo postInfo=new PostInfo(h,json);
         return postInfo.postMethod();
-//
-//        try {
-//            Map<String,Object> mmap=new LinkedHashMap<>();
-//            mmap.put("latitude", lat);
-//            mmap.put("longitude", lon);
-//            mmap.put("city", city);
-//            Gson gson=new Gson();
-//            String json=gson.toJson(mmap);
-//            Log.i("json",json);
-//
-////            String content = String.valueOf(object);
-//            URL url=new URL(h);
-//            HttpURLConnection connect=(HttpURLConnection)url.openConnection();
-//            connect.setDoInput(true);
-//            connect.setDoOutput(true);
-//            connect.setRequestMethod("POST");
-//            connect.setUseCaches(false);
-//            final String tokenStr ="Bearer LZPxZSDMEk7s6fZFduU-ZBqf8sTDyT8x";
-//            connect.setRequestProperty("Authorization", tokenStr);
-//            connect.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-//
-//            OutputStream outputStream = connect.getOutputStream();
-//            outputStream.write(json.getBytes());
-//
-//            int response = connect.getResponseCode();
-//            System.out.println(connect);
-//            if (response== HttpURLConnection.HTTP_OK)
-//            {
-//                System.out.println(response);
-//                InputStream input=connect.getInputStream();
-//                BufferedReader in = new BufferedReader(new InputStreamReader(input));
-//                String line = null;
-//                System.out.println(connect.getResponseCode());
-//                StringBuffer sb = new StringBuffer();
-//                while ((line = in.readLine()) != null) {
-//                    sb.append(line);
-//                }
-//                return sb.toString();
-//            }
-//            else {
-//                System.out.println(response);
-//                return "not exsits";
-//            }
-//        } catch (Exception e) {
-//            Log.e("e:", String.valueOf(e));
-//            return "internet errar";
-//        }
+
     }
 
 /*
