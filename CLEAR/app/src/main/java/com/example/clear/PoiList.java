@@ -68,7 +68,7 @@ public class PoiList extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        poiListResult = ((MainActivity) activity).getTitles();
+//        poiListResult = ((MainActivity) activity).getTitles();
     }
 
     @Override

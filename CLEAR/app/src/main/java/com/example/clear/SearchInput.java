@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,14 +16,20 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -31,7 +38,9 @@ import java.util.List;
  * Use the {@link SearchInput#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchInput extends Fragment implements View.OnClickListener {
+public class SearchInput extends Fragment
+        implements View.OnClickListener, TextWatcher
+{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -54,10 +63,7 @@ public class SearchInput extends Fragment implements View.OnClickListener {
     private AutoCompleteTextView searchText;// 输入搜索关键字
     private String keyWord = "";// 要输入的poi搜索关键字
     private EditText editCity;// 要输入的城市名字或者城市区号
-    private PoiResult poiResult; // poi返回的结果
-    private int currentPage = 0;// 当前页面，从0开始计数
-    private PoiSearch.Query query;// Poi查询条件类
-    private PoiSearch poiSearch;// POI搜索
+    private String loacitonCity;
 
     public SearchInput() {
         // Required empty public constructor
@@ -84,6 +90,8 @@ public class SearchInput extends Fragment implements View.OnClickListener {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+//        loacitonCity=((MainActivity) activity).getTitles();
+//        Log.i("location city", loacitonCity);
         myListener = (MyListener) getActivity();
     }
 
@@ -116,8 +124,9 @@ public class SearchInput extends Fragment implements View.OnClickListener {
         Button nextButton = v.findViewById(R.id.nextButton);
         nextButton.setOnClickListener(this);
         searchText = v.findViewById(R.id.keyWord);
-//        searchText.addTextChangedListener((TextWatcher) this);// 添加文本输入框监听事件
+        searchText.addTextChangedListener(this);// 添加文本输入框监听事件
         editCity = v.findViewById(R.id.city);
+        editCity.setText("北京");
 //        aMap.setOnMarkerClickListener((AMap.OnMarkerClickListener) this);// 添加点击marker监听事件
 //        aMap.setInfoWindowAdapter((AMap.InfoWindowAdapter) this);// 添加显示infowindow监听事件
     }
@@ -175,4 +184,31 @@ public class SearchInput extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        String content=s.toString().trim();//获取自动提示输入框的内容
+//        String value=keyWord;
+        if ("".equals(content)) {
+            Toast.makeText(getActivity(), "请输入关键词", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            myListener.sendContent(content);//将内容进行回传
+            String city = editCity.getText().toString();
+            Log.i("editcity", city);
+            myListener.sendContent_2(city);
+            Log.i("自动提示框", content);
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
+
 }
