@@ -11,9 +11,16 @@
         android:id="@+id/search_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@drawable/searchicon"
+        android:background="@drawable/searchicon2"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="50dp"/>
+    <Button
+        android:id="@+id/map_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/mapicon"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="100dp"/>
 
     <LinearLayout
         android:id="@+id/whole_search"

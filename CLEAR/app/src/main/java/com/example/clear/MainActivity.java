@@ -420,16 +420,15 @@ public class MainActivity extends AppCompatActivity
 
                     Log.i("获取定位时间", df.format(date));
 
-                    // 开子线程与后台交互数据
-
-                    thread1.start();
-
                     nowLat=amapLocation.getLatitude();
                     nowLon=amapLocation.getLongitude();
 
                     nowCity =amapLocation.getCity();
                     editCity = findViewById(R.id.city);
                     editCity.setText(nowCity);
+
+                    // 开子线程与后台交互数据
+                    thread1.start();
 
                     // 停止定位
 //                    mLocationClient.stopLocation();
@@ -474,7 +473,7 @@ public class MainActivity extends AppCompatActivity
                     + cities.get(i).getCityCode() + "城市编码:"
                     + cities.get(i).getAdCode() + "\n";
         }
-        Toast.makeText(MainActivity.this, infomation, Toast.LENGTH_SHORT).show();
+        showToast(infomation);
     }
 
     @Override
@@ -534,14 +533,14 @@ public class MainActivity extends AppCompatActivity
                             && suggestionCities.size() > 0) {
                         showSuggestCity(suggestionCities);
                     } else {
-                        Toast.makeText(MainActivity.this, "没有结果", Toast.LENGTH_SHORT).show();
+                        showToast("没有结果");
                     }
                 }
             } else {
-                Toast.makeText(MainActivity.this, "没有结果", Toast.LENGTH_SHORT).show();
+                showToast("没有结果");
             }
         } else {
-            Toast.makeText(MainActivity.this, rCode, Toast.LENGTH_SHORT).show();
+            showToast(rCode+"");
         }
     }
 
@@ -562,6 +561,8 @@ public class MainActivity extends AppCompatActivity
         searchIconButton.setOnClickListener(this);
         Button changeToListButton =findViewById(R.id.change_to_list);
         changeToListButton.setOnClickListener(this);
+        Button mapIconButton =findViewById(R.id.map_icon);
+        mapIconButton.setOnClickListener(this);
 
         searchText = findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
@@ -630,8 +631,6 @@ public class MainActivity extends AppCompatActivity
 //                    Log.i("show search result", "点击的是搜索框外的地图");
 //                }
 //            }
-
-
 //            poiListView.setVisibility(View.GONE);
         }
         return super.dispatchTouchEvent(ev);
@@ -653,6 +652,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.change_to_list:
                 changeResultToList();
+                break;
+            case R.id.map_icon:
+                showInitMap();
                 break;
             default:
                 break;
@@ -687,7 +689,7 @@ public class MainActivity extends AppCompatActivity
                 query.setPageNum(currentPage);// 设置查后一页
                 poiSearch.searchPOIAsyn();
             } else {
-                Toast.makeText(this, "已经是最后一页了", Toast.LENGTH_SHORT).show();
+                showToast("已经最后一页了");
             }
         }
     }
@@ -720,7 +722,17 @@ public class MainActivity extends AppCompatActivity
             resultListView.setVisibility(View.VISIBLE);
             Log.i("search result", "visible");
         }
-}
+    }
+
+    /**
+     * 点击显示最初的定位地图
+     */
+    public void showInitMap(){
+        aMap.clear();
+        Thread thread =new Thread(runnable);
+        thread.start();
+
+    }
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -731,7 +743,7 @@ public class MainActivity extends AppCompatActivity
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         String content=s.toString().trim();//获取自动提示输入框的内容
         if ("".equals(content)) {
-            Toast.makeText(this, "请输入关键词", Toast.LENGTH_SHORT).show();
+            showToast("请输入关键词");
 //            aMap.clear();
         }
         else {
