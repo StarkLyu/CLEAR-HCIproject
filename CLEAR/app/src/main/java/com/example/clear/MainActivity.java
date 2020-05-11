@@ -27,6 +27,8 @@ import com.google.gson.Gson;
 
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -46,9 +48,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -62,6 +67,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,7 +101,10 @@ public class MainActivity extends AppCompatActivity
     private AutoCompleteTextView searchText;// 输入搜索关键字
     private TextView editCity;// 要输入的城市名字或者城市区号
     private ListView poiListView;
-    TextView startTimeView, endTimeView, timePeriodView, protectLevelView;  // 输入组件
+    TextView startTimeView, endTimeView, timePeriodView;  // 输入组件
+    private Calendar cal;   //当前时间
+    private int year,month,day;
+
 
     private boolean poisitionIsChosen;    // 判断是否已经选择地点
     String nowCity; //现在定位的城市
@@ -118,7 +127,8 @@ public class MainActivity extends AppCompatActivity
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         poiListView = findViewById(R.id.poi_list);
-        init();
+        mapInit();
+        getDate();
         setUpViewListener();
 
         //检查版本是否大于M
@@ -132,6 +142,8 @@ public class MainActivity extends AppCompatActivity
                 showLocation();
             }
         }
+
+
     }
 
     /**
@@ -241,26 +253,16 @@ public class MainActivity extends AppCompatActivity
                     String searchAresult=p_pname+" "+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
                     searchResult.add(searchAresult);
 
-
-//                    Bitmap virusBitmap;
-////                    自定义marker
-//                    if (level<level_1){
-//                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
-//                    }
-//                    else if(level<level_2){
-//                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
-//                    }
-//                    else{
-//                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
-//                    }
-////                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
-//                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
-//                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+//                    自定义marker
+                    Bitmap virusBitmap;
+                    virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
                     LatLng latLng = new LatLng(lat, lon);
                     MarkerOptions markerOptions = new MarkerOptions()
                             //必须，设置经纬度
                             .position(latLng);
-//                    markerOptions.icon(virusIcon);
+                    markerOptions.icon(virusIcon);
 
                     aMap.addMarker(markerOptions);
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
@@ -290,7 +292,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    private void init(){
+    private void mapInit(){
         if(aMap ==null){
             aMap = mapView.getMap();
             mUiSettings=aMap.getUiSettings();
@@ -570,9 +572,48 @@ public class MainActivity extends AppCompatActivity
         editCity.setText(nowCity);  // 城市默认为当前定位的城市
 
         startTimeView=findViewById(R.id.start_time);
+        startTimeView.setOnClickListener(this);
         endTimeView=findViewById(R.id.end_time);
+        endTimeView.setOnClickListener(this);
         timePeriodView=findViewById(R.id.time_period);
-        protectLevelView=findViewById(R.id.protection_level);
+//        protectLevelView=findViewById(R.id.protection_level);
+
+        // 设置下拉框的监听
+        Spinner mSpinner = findViewById(R.id.protect_level_spinner);
+        ArrayList<String> list = new ArrayList<>();
+
+        list.add("请选择您的防护措施");
+        //为下拉列表定义一个适配器
+        final ArrayAdapter<String> ad = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+        //设置下拉菜单样式。
+        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //添加数据
+        mSpinner.setAdapter(ad);
+        list.add("无防护措施");
+        list.add("口罩");
+        list.add("防护服");
+        mSpinner.setSelection(0,true);//选中默认值
+        list.remove(0);
+        //点击响应事件
+        mSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                protectionLevel=arg2;
+//                showToast(protectionLevel+"");
+            }
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+        });
+    }
+
+    /**
+     * 获取当前日期
+     */
+    private void getDate() {
+        cal=Calendar.getInstance();
+        year=cal.get(Calendar.YEAR);       //获取年月日时分秒
+        month=cal.get(Calendar.MONTH);   //获取到的月份是从0开始计数
+        day=cal.get(Calendar.DAY_OF_MONTH);
     }
 
     /**
@@ -656,6 +697,12 @@ public class MainActivity extends AppCompatActivity
             case R.id.map_icon:
                 showInitMap();
                 break;
+            case R.id.start_time:
+                showStartTime();
+                break;
+            case R.id.end_time:
+                showEndTime();
+                break;
             default:
                 break;
         }
@@ -670,9 +717,9 @@ public class MainActivity extends AppCompatActivity
         Log.i("start time",startTime);
         endTime=endTimeView.getText().toString();
         Log.i("end time", endTime);
-        timePeriod=Integer.parseInt(timePeriodView.getText().toString());
+        timePeriod=Integer.parseInt(timePeriodView.getText().toString())*60;
         Log.i("time period", timePeriod+"");
-        protectionLevel=Integer.parseInt(protectLevelView.getText().toString());
+//        protectionLevel=Integer.parseInt(protectLevelView.getText().toString());
         Log.i("protection level", protectionLevel+"");
 
         thread2=new Thread(runnable2);
@@ -734,6 +781,100 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * 点击start time文本框弹出日期选择器
+     */
+    public void showStartTime(){
+        final int[] y = new int[1];
+        final int[] m = new int[1];
+        final int[] d = new int[1];
+        TimePickerDialog.OnTimeSetListener timeListener=new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String hour,min;
+                if (hourOfDay<10) {
+                    hour="0"+hourOfDay;
+                }else {
+                    hour=hourOfDay+"";
+                }
+                if(minute<10){
+                    min="0"+minute;
+                }else{
+                    min=minute+"";
+                }
+                startTimeView.setText(y[0]+"-"+(++m[0])+"-"+d[0]+" "+hour+":"+min+":00");
+            }
+        };
+        TimePickerDialog dialog1=new TimePickerDialog(this, TimePickerDialog.THEME_HOLO_LIGHT, timeListener, 0,0,true);
+        dialog1.show();
+
+        DatePickerDialog.OnDateSetListener listener=new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker arg0, int year, int month, int day) {
+//                startTimeView.setText(year+"-"+(++month)+"-"+day);      //将选择的日期显示到TextView中,因为之前获取month直接使用，所以不需要+1，这个地方需要显示，所以+1
+                y[0] =year;
+                m[0] =month;
+                d[0] =day;
+            }
+        };
+        //主题在这里！后边三个参数为显示dialog时默认的日期，月份从0开始，0-11对应1-12个月
+        DatePickerDialog dialog=new DatePickerDialog(MainActivity.this, DatePickerDialog.THEME_HOLO_LIGHT,listener,year,month,day);
+        dialog.show();
+
+    }
+
+    /**
+     * 点击end time文本框弹出日期选择器
+     */
+    public void showEndTime(){
+        final int[] y = new int[1];
+        final int[] m = new int[1];
+        final int[] d = new int[1];
+        TimePickerDialog.OnTimeSetListener timeListener=new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String hour,min;
+                if (hourOfDay<10) {
+                    hour="0"+hourOfDay;
+                }else {
+                    hour=hourOfDay+"";
+                }
+                if(minute<10){
+                    min="0"+minute;
+                }else{
+                    min=minute+"";
+                }
+                endTimeView.setText(y[0]+"-"+(++m[0])+"-"+d[0]+" "+hour+":"+min+":00");
+            }
+        };
+        TimePickerDialog dialog1=new TimePickerDialog(this, TimePickerDialog.THEME_HOLO_LIGHT, timeListener, 0,0,true);
+        dialog1.show();
+
+        DatePickerDialog.OnDateSetListener listener=new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker arg0, int year, int month, int day) {
+//                startTimeView.setText(year+"-"+(++month)+"-"+day);      //将选择的日期显示到TextView中,因为之前获取month直接使用，所以不需要+1，这个地方需要显示，所以+1
+                y[0] =year;
+                m[0] =month;
+                d[0] =day;
+            }
+        };
+        //主题在这里！后边三个参数为显示dialog时默认的日期，月份从0开始，0-11对应1-12个月
+        DatePickerDialog dialog=new DatePickerDialog(MainActivity.this, DatePickerDialog.THEME_HOLO_LIGHT,listener,year,month,day);
+        dialog.show();
+
+    }
+
+    /**
+     *
+     * @param s
+     * @param start
+     * @param count
+     * @param after
+     * 下面三个函数都是关于地点搜索框的
+     */
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         poiListView.setVisibility(View.GONE);
