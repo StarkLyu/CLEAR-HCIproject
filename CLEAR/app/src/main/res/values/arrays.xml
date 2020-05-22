@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="protect">
+        <item>无防护措施</item>
+        <item>佩戴口罩</item>
+        <item>穿戴防护服</item>
+    </string-array>
+    <string-array name="zhouqi">
+        <item>周一至周五</item>
+        <item>每天</item>
+        <item>周末</item>
+    </string-array>
+</resources>

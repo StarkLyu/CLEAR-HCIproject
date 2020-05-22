@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".PatientOftenActivity">
+    <TextView
+        android:id="@+id/text_idInfo"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:text="经常访问地点信息"
+        android:background="@color/primary"
+        android:textSize="@dimen/text_title" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/text_idInfo"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_white_frame"
+        android:id="@+id/rl_name">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="120dp"
+            android:id="@+id/tv_name"
+            android:text="地点"
+            android:textSize="@dimen/text"
+            android:textColor="@color/primary_text"
+            android:gravity="center" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@+id/tv_name"
+            android:background="@color/divider" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ed_name"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/tv_name"
+            android:textColor="@color/primary_text" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/rl_name"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_white_frame"
+        android:id="@+id/rl_gender">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="120dp"
+            android:id="@+id/tv_gender"
+            android:text="到达时间"
+            android:textSize="@dimen/text"
+            android:textColor="@color/primary_text"
+            android:gravity="center" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@+id/tv_gender"
+            android:background="@color/divider" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ed_gender"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/tv_gender"
+            android:textColor="@color/primary_text" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/rl_gender"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_white_frame"
+        android:id="@+id/rl_phone">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="120dp"
+            android:id="@+id/tv_phone"
+            android:text="停留时间"
+            android:textSize="@dimen/text"
+            android:textColor="@color/primary_text"
+            android:gravity="center" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@+id/tv_phone"
+            android:background="@color/divider" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ed_phone"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/tv_phone"
+            android:textColor="@color/primary_text" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/rl_phone"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_white_frame"
+        android:id="@+id/rl_2">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="120dp"
+            android:id="@+id/tv_2"
+            android:text="访问周期"
+            android:textSize="@dimen/text"
+            android:textColor="@color/primary_text"
+            android:gravity="center" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@+id/tv_2"
+            android:background="@color/divider" />
+        <Spinner
+            android:id="@+id/spinner2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/tv_2"
+            android:textAlignment="center"
+            android:entries="@array/zhouqi" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/rl_2"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_white_frame"
+        android:id="@+id/rl_1">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="120dp"
+            android:id="@+id/tv_1"
+            android:text="防护措施"
+            android:textSize="@dimen/text"
+            android:textColor="@color/primary_text"
+            android:gravity="center" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@+id/tv_1"
+            android:background="@color/divider" />
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/tv_1"
+            android:textAlignment="center"
+            android:entries="@array/protect" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/buttonView"
+        android:layout_below="@id/rl_1">
+
+        <Button
+            android:layout_height="60dp"
+            android:layout_width="180dp"
+            android:id="@+id/btn_new"
+            android:text="添加新地点"
+            android:background="@color/primary"
+            android:textColor="@color/primary_text"
+            android:layout_margin="20dp"
+            android:textSize="@dimen/text_title"/>
+        <Button
+            android:layout_height="60dp"
+            android:layout_width="180dp"
+            android:id="@+id/btn_next"
+            android:text="下一步"
+            android:background="@color/primary"
+            android:textColor="@color/primary_text"
+            android:layout_toRightOf="@+id/btn_new"
+            android:layout_margin="20dp"
+            android:textSize="@dimen/text_title"/>
+    </RelativeLayout>
+
+</RelativeLayout>

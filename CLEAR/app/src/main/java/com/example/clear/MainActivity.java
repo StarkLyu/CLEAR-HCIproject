@@ -23,6 +23,7 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
 
@@ -142,6 +143,15 @@ public class MainActivity extends AppCompatActivity
                 showLocation();
             }
         }
+
+        FloatingActionButton fab=findViewById(R.id.fab_addTask);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,PatientInActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
     }
