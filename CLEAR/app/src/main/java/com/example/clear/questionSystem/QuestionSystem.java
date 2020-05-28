@@ -46,7 +46,7 @@ public class QuestionSystem {
                             addOption = new Option(optionText, OptionType.NEXT, this);
                             break;
                         case "record":
-                            addOption = new Option(optionText, OptionType.RECORD, this);
+                            addOption = new RecordOption(optionText,this);
                             break;
                         case "questions":
                             addOption = new QuestionOption(optionText, parseQuestions(optionObj.getJSONArray("questions")), true, this);
