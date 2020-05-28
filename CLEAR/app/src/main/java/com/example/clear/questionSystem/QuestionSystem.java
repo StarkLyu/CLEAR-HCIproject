@@ -67,20 +67,28 @@ public class QuestionSystem {
         }
         return res;
     }
-    
+
+    //获取当前问题
     public Question getCurrentQuestion()
     {
         return questionList.get(currentQuestion);
     }
 
-    public void nextQuestion()
+    //切换到下一个问题，切换成功返回true，失败返回false
+    public boolean nextQuestion()
     {
-        currentQuestion++;
+        if (hasNext())
+        {
+            currentQuestion++;
+            return true;
+        }
+        else return false;
     }
 
+    //判断是否有下一个问题
     public boolean hasNext()
     {
-        return currentQuestion < questionList.size();
+        return currentQuestion < questionList.size() - 1;
     }
 
     public void addQuestionsAfterCurrent(ArrayList<Question> adders)
