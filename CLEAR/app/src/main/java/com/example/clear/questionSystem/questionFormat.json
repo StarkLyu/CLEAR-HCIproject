@@ -1,0 +1,119 @@
+[
+  {
+    "question": "你今天出门了吗",
+    "options": [
+      {
+        "text": "忘记了",
+        "type": "questions",
+        "questions": [
+          {
+            "question": "你今天去商场了吗",
+            "options": [
+              {
+                "text": "没有",
+                "type": "finish"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "没有",
+        "type": "finish"
+      },
+      {
+        "text": "出门了",
+        "type": "record"
+      }
+    ]
+  },
+  {
+    "question": "你今天出门了吗",
+    "options": [
+      {
+        "text": "忘记了",
+        "type": "questions",
+        "questions": [
+          {
+            "question": "你今天去商场了吗",
+            "options": [
+              {
+                "text": "没有",
+                "type": "finish"
+              }
+            ]
+          },
+          {
+            "question": "你确定?",
+            "options": [
+              {
+                "text": "确定!!",
+                "type": "finish"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "没有",
+        "type": "finish"
+      },
+      {
+        "text": "出门了",
+        "type": "record"
+      }
+    ]
+  },
+  {
+    "question": "你猜这个问题是用来干嘛的？",
+    "options": [
+      {
+        "text": "不知道啊",
+        "type": "switchQuestions",
+        "questions": [
+          {
+            "question": "你不用知道嘿嘿",
+            "options": [
+              {
+                "text": "再见，，",
+                "type": "finish"
+              },
+              {
+                "text": "不就测试个switch吗装什么逼啊",
+                "type": "finish"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "不知道啊",
+        "type": "switchQuestions",
+        "questions": [
+          {
+            "question": "你不用知道嘿嘿",
+            "options": [
+              {
+                "text": "再见，，",
+                "type": "finish"
+              },
+              {
+                "text": "不就测试个switch吗装什么逼啊",
+                "type": "finish"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "question": "我靠你居然来这儿了！程序有bug了嘛！？",
+    "options": [
+      {
+        "text": "你以为呢？",
+        "type": "finish"
+      }
+    ]
+  }
+]
