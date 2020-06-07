@@ -15,9 +15,11 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.HeatmapTileProvider;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
@@ -68,6 +70,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -183,6 +186,9 @@ public class MainActivity extends AppCompatActivity
             try {
                 JSONArray jsonArray=new JSONArray(post);
                 int length=jsonArray.length();
+
+                LatLng[] latlngs = new LatLng[length];
+
                 for (int i=0; i<length; i++){
                     JSONObject obj=jsonArray.getJSONObject(i);
                     double lat=obj.getDouble("latitude");
@@ -190,6 +196,9 @@ public class MainActivity extends AppCompatActivity
                     double level=obj.getDouble("level");
 //                    Log.i("one position", i+" "+lat+" "+lon+" "+level);
 
+                    latlngs[i] = new LatLng(lat, lon);
+
+                    /*
                     Bitmap virusBitmap;
 //                    自定义marker
                     if (level<level_1){
@@ -211,7 +220,21 @@ public class MainActivity extends AppCompatActivity
                     markerOptions.icon(virusIcon);
 
                     aMap.addMarker(markerOptions);
+
+                     */
                 }
+                // 构建热力图 HeatmapTileProvider
+                HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
+                builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
+                // Gradient 的设置可见参考手册
+                // 构造热力图对象
+                HeatmapTileProvider heatmapTileProvider = builder.build();
+                // 初始化 TileOverlayOptions
+                TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
+                tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+                // 向地图上添加 TileOverlayOptions 类对象
+                aMap.addTileOverlay(tileOverlayOptions);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -260,7 +283,7 @@ public class MainActivity extends AppCompatActivity
                     double lon=p_position.getDouble("longitude");
                     String city=p_position.getString("city");
                     PositionInfo p_info=new PositionInfo(p_poiid, p_pname, lat, lon, city);
-                    String searchAresult=p_pname+" "+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
+                    String searchAresult="地点："+p_pname+" 时间："+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
                     searchResult.add(searchAresult);
 
 //                    自定义marker
@@ -565,6 +588,8 @@ public class MainActivity extends AppCompatActivity
      *设置页面监听
      */
     private void setUpViewListener() {
+        Button userButton=findViewById(R.id.user_icon);
+        userButton.setOnClickListener(this);
         Button searButton = findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
         Button nextButton = findViewById(R.id.next_button);
@@ -690,6 +715,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            //点击用户按钮
+            case R.id.user_icon:
+                changeToUser();
+                break;
             //点击搜索按钮
             case R.id.search_button:
                 searchButton();
@@ -716,6 +745,15 @@ public class MainActivity extends AppCompatActivity
             default:
                 break;
         }
+    }
+
+    /**
+     *点击用户按钮
+     */
+    public void changeToUser() {
+
+        Intent intent=new Intent(MainActivity.this, UserLoginActivity.class);
+        startActivity(intent);
     }
 
     /**
