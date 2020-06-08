@@ -2,10 +2,12 @@ package com.example.clear;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
@@ -116,20 +118,21 @@ public class UserRegisterActivity extends AppCompatActivity {
 //                JSONArray jsonArray=new JSONArray(post);
 
                 if(post.equals("success")){
-//                    Toast.makeText(UserRegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-                    //把账号、密码和账号标识保存到sp里面
 
-                    //注册成功后把账号传递到LoginActivity.java中
-                    // 返回值到loginActivity显示
-                    Intent data = new Intent();
-                    data.putExtra("userName", userName);
-                    setResult(RESULT_OK, data);
-                    //RESULT_OK为Activity系统常量，状态码为-1，
+                    SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
+                    sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
+
                     // 表示此页面下的内容操作成功将data返回到上一页面，如果是用back返回过去的则不存在用setResult传递data值
                     UserRegisterActivity.this.finish();
+
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"注册成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
                 else{
-//                    Toast.makeText(UserRegisterActivity.this, "该用户名已存在", Toast.LENGTH_SHORT).show();
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"注册失败",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
 
             } catch (Exception e) {

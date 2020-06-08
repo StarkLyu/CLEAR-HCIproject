@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
@@ -104,23 +105,21 @@ public class UserLoginActivity extends AppCompatActivity {
         userName=et_user_name.getText().toString().trim();
         psw=et_psw.getText().toString().trim();
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(data!=null){
-            //是获取注册界面回传过来的用户名
-            Toast.makeText(UserLoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-            // getExtra().getString("***");
-            String userName=data.getStringExtra("userName");
-            if(!TextUtils.isEmpty(userName)){
-                //设置用户名到 et_user_name 控件
-                et_user_name.setText(userName);
-                //et_user_name控件的setSelection()方法来设置光标位置
-                et_user_name.setSelection(userName.length());
-            }
-        }
-    }
+//
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(data!=null){
+//            // getExtra().getString("***");
+//            String userName=data.getStringExtra("userName");
+//            if(!TextUtils.isEmpty(userName)){
+//                //设置用户名到 et_user_name 控件
+//                et_user_name.setText(userName);
+//                //et_user_name控件的setSelection()方法来设置光标位置
+//                et_user_name.setSelection(userName.length());
+//            }
+//        }
+//    }
 
     /**
      *获取后台数据
@@ -152,12 +151,23 @@ public class UserLoginActivity extends AppCompatActivity {
 
                 if (post.equals("not exsits")){
                     state=false;
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"登录失败",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+
                 }
                 else{
                     state=true;
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
                     sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
+
                     UserLoginActivity.this.finish();
+
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"登录成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+
+
                 }
 
             } catch (Exception e) {
