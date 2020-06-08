@@ -14,8 +14,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.github.ybq.android.spinkit.sprite.Sprite;
+import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -33,6 +36,7 @@ public class UserLoginActivity extends AppCompatActivity {
     private String userName,psw;
     Boolean state=false;
     Thread thread1;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class UserLoginActivity extends AppCompatActivity {
         btn_login=findViewById(R.id.btn_login);
         et_user_name=findViewById(R.id.et_user_name);
         et_psw=findViewById(R.id.et_psw);
+        progressBar=findViewById(R.id.spin_kit);
 
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
         et_user_name.setText(sp.getString("username", null));
@@ -84,6 +89,7 @@ public class UserLoginActivity extends AppCompatActivity {
                 }
                 else{
                     Log.i("user info", userName+" "+psw);
+                    progressBar.setVisibility(View.VISIBLE);
                     thread1=new Thread(runnable);
                     thread1.start();
 
@@ -144,6 +150,9 @@ public class UserLoginActivity extends AppCompatActivity {
             Log.i("post request", userName+" "+psw);
             Log.i("post response",post);
 
+//            ProgressBar progressBar = findViewById(R.id.spin_kit);
+//            Sprite doubleBounce = new DoubleBounce();
+//            progressBar.setIndeterminateDrawable(doubleBounce);
 
 //            解析json
             try {
@@ -151,6 +160,7 @@ public class UserLoginActivity extends AppCompatActivity {
 
                 if (post.equals("not exsits")){
                     state=false;
+//                    progressBar.setVisibility(View.GONE);
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"登录失败",Toast.LENGTH_SHORT).show();
                     Looper.loop();
@@ -158,6 +168,7 @@ public class UserLoginActivity extends AppCompatActivity {
                 }
                 else{
                     state=true;
+//                    progressBar.setVisibility(View.GONE);
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
                     sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
 

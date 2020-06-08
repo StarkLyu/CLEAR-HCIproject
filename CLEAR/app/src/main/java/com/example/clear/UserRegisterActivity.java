@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ public class UserRegisterActivity extends AppCompatActivity {
     //用户名，密码，再次输入的密码的控件的获取值
     private String userName,psw, tel;
     Thread thread1;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class UserRegisterActivity extends AppCompatActivity {
         et_user_name=findViewById(R.id.et_user_name);
         et_psw=findViewById(R.id.et_psw);
         et_tel=findViewById(R.id.et_tel);
+        progressBar=findViewById(R.id.spin_kit);
 
         //注册按钮
         btn_register.setOnClickListener(new View.OnClickListener() {
@@ -73,10 +76,9 @@ public class UserRegisterActivity extends AppCompatActivity {
                     return;
                 }
                 else{
+                    progressBar.setVisibility(View.VISIBLE);
                     thread1=new Thread(runnable);
                     thread1.start();
-
-
                 }
             }
         });
