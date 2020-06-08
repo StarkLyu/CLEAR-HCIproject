@@ -54,12 +54,11 @@ public class UserLoginActivity extends AppCompatActivity {
         et_psw.setText(sp.getString("password", null));
         state=sp.getBoolean("state", false);
 
-        if(state){
-//            UserLoginActivity.this.finish();
-            Toast.makeText(UserLoginActivity.this, "已登录", Toast.LENGTH_SHORT).show();
-            Intent intent=new Intent(UserLoginActivity.this, UserInfoActivity.class);
-            startActivity(intent);
-        }
+//        if(state){
+//            Toast.makeText(UserLoginActivity.this, "已登录", Toast.LENGTH_SHORT).show();
+//            Intent intent=new Intent(UserLoginActivity.this, UserInfoActivity.class);
+//            startActivity(intent);
+//        }
 
         //注册按钮
         btn_register.setOnClickListener(new View.OnClickListener() {
@@ -104,6 +103,23 @@ public class UserLoginActivity extends AppCompatActivity {
     private void getEditString(){
         userName=et_user_name.getText().toString().trim();
         psw=et_psw.getText().toString().trim();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data!=null){
+            //是获取注册界面回传过来的用户名
+            Toast.makeText(UserLoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+            // getExtra().getString("***");
+            String userName=data.getStringExtra("userName");
+            if(!TextUtils.isEmpty(userName)){
+                //设置用户名到 et_user_name 控件
+                et_user_name.setText(userName);
+                //et_user_name控件的setSelection()方法来设置光标位置
+                et_user_name.setSelection(userName.length());
+            }
+        }
     }
 
     /**

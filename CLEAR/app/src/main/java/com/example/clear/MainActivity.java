@@ -2,6 +2,7 @@ package com.example.clear;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -32,7 +33,9 @@ import com.google.gson.Gson;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +48,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -107,6 +111,7 @@ public class MainActivity extends AppCompatActivity
     private ListView poiListView;
     TextView startTimeView, endTimeView, timePeriodView;  // 输入组件
     private Calendar cal;   //当前时间
+    Toolbar toolbar;
     private int year,month,day;
 
 
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity
     PositionInfo focusPoi;  //查找的位置
     String startTime, endTime;
     int timePeriod, protectionLevel;
-    boolean sendNotice;
+    boolean sendNotice, isLogin;
 
     Thread thread1, thread2;
 
@@ -131,6 +136,7 @@ public class MainActivity extends AppCompatActivity
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         poiListView = findViewById(R.id.poi_list);
+        loginState();
         mapInit();
         getDate();
         setUpViewListener();
@@ -324,6 +330,12 @@ public class MainActivity extends AppCompatActivity
     };
 
 
+    private void loginState(){
+        SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
+        String username=sp.getString("username", null);
+        String password=sp.getString("password", null);
+        isLogin=sp.getBoolean("state", false);
+    }
 
     private void mapInit(){
         if(aMap ==null){
@@ -752,8 +764,15 @@ public class MainActivity extends AppCompatActivity
      */
     public void changeToUser() {
 
-        Intent intent=new Intent(MainActivity.this, UserLoginActivity.class);
-        startActivity(intent);
+        if(!isLogin){
+            Intent intent=new Intent(MainActivity.this, UserLoginActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     /**

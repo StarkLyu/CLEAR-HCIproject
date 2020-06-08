@@ -42,6 +42,7 @@ public class UserRegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_register);
+
         init();
     }
 
@@ -112,7 +113,7 @@ public class UserRegisterActivity extends AppCompatActivity {
 
 //            解析json
             try {
-                JSONArray jsonArray=new JSONArray(post);
+//                JSONArray jsonArray=new JSONArray(post);
 
                 if(post.equals("success")){
 //                    Toast.makeText(UserRegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
@@ -131,7 +132,7 @@ public class UserRegisterActivity extends AppCompatActivity {
 //                    Toast.makeText(UserRegisterActivity.this, "该用户名已存在", Toast.LENGTH_SHORT).show();
                 }
 
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -160,5 +161,7 @@ public class UserRegisterActivity extends AppCompatActivity {
         PostInfo postInfo=new PostInfo(h,json);
         return postInfo.postMethod();
     }
+
+
 
 }
