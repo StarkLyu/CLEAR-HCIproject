@@ -7,14 +7,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.github.ybq.android.spinkit.sprite.Sprite;
+import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -32,6 +36,7 @@ public class UserLoginActivity extends AppCompatActivity {
     private String userName,psw;
     Boolean state=false;
     Thread thread1;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +53,7 @@ public class UserLoginActivity extends AppCompatActivity {
         btn_login=findViewById(R.id.btn_login);
         et_user_name=findViewById(R.id.et_user_name);
         et_psw=findViewById(R.id.et_psw);
+        progressBar=findViewById(R.id.spin_kit);
 
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
         et_user_name.setText(sp.getString("username", null));
@@ -83,6 +89,7 @@ public class UserLoginActivity extends AppCompatActivity {
                 }
                 else{
                     Log.i("user info", userName+" "+psw);
+                    progressBar.setVisibility(View.VISIBLE);
                     thread1=new Thread(runnable);
                     thread1.start();
 
@@ -104,23 +111,21 @@ public class UserLoginActivity extends AppCompatActivity {
         userName=et_user_name.getText().toString().trim();
         psw=et_psw.getText().toString().trim();
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(data!=null){
-            //是获取注册界面回传过来的用户名
-            Toast.makeText(UserLoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-            // getExtra().getString("***");
-            String userName=data.getStringExtra("userName");
-            if(!TextUtils.isEmpty(userName)){
-                //设置用户名到 et_user_name 控件
-                et_user_name.setText(userName);
-                //et_user_name控件的setSelection()方法来设置光标位置
-                et_user_name.setSelection(userName.length());
-            }
-        }
-    }
+//
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(data!=null){
+//            // getExtra().getString("***");
+//            String userName=data.getStringExtra("userName");
+//            if(!TextUtils.isEmpty(userName)){
+//                //设置用户名到 et_user_name 控件
+//                et_user_name.setText(userName);
+//                //et_user_name控件的setSelection()方法来设置光标位置
+//                et_user_name.setSelection(userName.length());
+//            }
+//        }
+//    }
 
     /**
      *获取后台数据
@@ -145,6 +150,9 @@ public class UserLoginActivity extends AppCompatActivity {
             Log.i("post request", userName+" "+psw);
             Log.i("post response",post);
 
+//            ProgressBar progressBar = findViewById(R.id.spin_kit);
+//            Sprite doubleBounce = new DoubleBounce();
+//            progressBar.setIndeterminateDrawable(doubleBounce);
 
 //            解析json
             try {
@@ -152,12 +160,25 @@ public class UserLoginActivity extends AppCompatActivity {
 
                 if (post.equals("not exsits")){
                     state=false;
+//                    progressBar.setVisibility(View.GONE);
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"登录失败",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+
                 }
                 else{
                     state=true;
+//                    progressBar.setVisibility(View.GONE);
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
                     sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
+
                     UserLoginActivity.this.finish();
+
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"登录成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+
+
                 }
 
             } catch (Exception e) {
