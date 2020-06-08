@@ -1,26 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <com.amap.api.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <Button
-        android:id="@+id/search_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/searchicon2"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="50dp"/>
-    <Button
-        android:id="@+id/map_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/mapicon"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="100dp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/user_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/avatar"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="50dp"/>
+        <Button
+            android:id="@+id/search_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/searchicon2"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="100dp"/>
+        <Button
+            android:id="@+id/map_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/mapicon"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="150dp"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/whole_search"
@@ -33,34 +47,47 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginLeft="5dp"
-            android:background="#ffffff">
+            android:background="#ffffff"
+            android:orientation="horizontal">
 
-            <AutoCompleteTextView
-                android:id="@+id/keyWord"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:completionThreshold="1"
-                android:dropDownVerticalOffset="1.0dip"
-                android:hint="请输入关键字"
-                android:imeOptions="actionDone"
-                android:inputType="text|textAutoComplete"
-                android:maxLength="20"
-                android:paddingRight="37.0dip"
-                android:singleLine="true"
-                android:textColor="#000000"
-                android:textSize="16.0sp" />
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/city"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="请输入城市"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:textColor="#000000"
-                android:textSize="16.0sp"/>
+                <AutoCompleteTextView
+                    android:id="@+id/keyWord"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="1"
+                    android:dropDownVerticalOffset="1.0dip"
+                    android:hint="请输入关键字"
+                    android:imeOptions="actionDone"
+                    android:inputType="text|textAutoComplete"
+                    android:maxLength="20"
+                    android:paddingRight="37.0dip"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="16.0sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="80dp"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="请输入城市"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="16.0sp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/next_button"
@@ -78,29 +105,39 @@
             android:layout_height="wrap_content"
             android:background="#ffffff">
 
-            <EditText
-                android:id="@+id/start_time"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="预计开始时间"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:textColor="#000000"
-                android:textSize="16.0sp"/>
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/end_time"
+                <EditText
+                    android:id="@+id/start_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="预计开始时间"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="16.0sp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="预计结束时间"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:textColor="#000000"
-                android:textSize="16.0sp"/>
+                android:layout_height="wrap_content">
 
+                <EditText
+                    android:id="@+id/end_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="预计结束时间"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="16.0sp"/>
 
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
@@ -111,31 +148,40 @@
             android:layout_marginTop="0dp"
             android:background="#ffffff">
 
-            <EditText
-                android:id="@+id/time_period"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="逗留时间/min"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:textColor="#000000"
-                android:textSize="16.0sp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="150dp"
+                android:layout_height="wrap_content">
 
-<!--            <EditText-->
-<!--                android:id="@+id/protection_level"-->
-<!--                android:layout_width="200dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:hint="防护等级"-->
-<!--                android:imeOptions="actionDone"-->
-<!--                android:singleLine="true"-->
-<!--                android:textColor="#000000"-->
-<!--                android:textSize="16.0sp"/>-->
+                <EditText
+                    android:id="@+id/time_period"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="逗留时间/min"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="16.0sp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <Spinner
                 android:id="@+id/protect_level_spinner"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content" />
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:layout_width="200dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.ExposedDropdownMenu">-->
+
+<!--            <AutoCompleteTextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:inputType="none"-->
+<!--                />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         </LinearLayout>
 

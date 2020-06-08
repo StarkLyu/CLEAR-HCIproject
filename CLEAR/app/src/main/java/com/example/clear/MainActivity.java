@@ -2,6 +2,7 @@ package com.example.clear;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -15,9 +16,11 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.HeatmapTileProvider;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
@@ -30,7 +33,9 @@ import com.google.gson.Gson;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -43,6 +48,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -68,6 +74,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity
     private ListView poiListView;
     TextView startTimeView, endTimeView, timePeriodView;  // 输入组件
     private Calendar cal;   //当前时间
+    Toolbar toolbar;
     private int year,month,day;
 
 
@@ -115,7 +123,7 @@ public class MainActivity extends AppCompatActivity
     PositionInfo focusPoi;  //查找的位置
     String startTime, endTime;
     int timePeriod, protectionLevel;
-    boolean sendNotice;
+    boolean sendNotice, isLogin;
 
     Thread thread1, thread2;
 
@@ -128,6 +136,7 @@ public class MainActivity extends AppCompatActivity
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         poiListView = findViewById(R.id.poi_list);
+        loginState();
         mapInit();
         getDate();
         setUpViewListener();
@@ -183,6 +192,9 @@ public class MainActivity extends AppCompatActivity
             try {
                 JSONArray jsonArray=new JSONArray(post);
                 int length=jsonArray.length();
+
+                LatLng[] latlngs = new LatLng[length];
+
                 for (int i=0; i<length; i++){
                     JSONObject obj=jsonArray.getJSONObject(i);
                     double lat=obj.getDouble("latitude");
@@ -190,6 +202,9 @@ public class MainActivity extends AppCompatActivity
                     double level=obj.getDouble("level");
 //                    Log.i("one position", i+" "+lat+" "+lon+" "+level);
 
+                    latlngs[i] = new LatLng(lat, lon);
+
+                    /*
                     Bitmap virusBitmap;
 //                    自定义marker
                     if (level<level_1){
@@ -211,7 +226,21 @@ public class MainActivity extends AppCompatActivity
                     markerOptions.icon(virusIcon);
 
                     aMap.addMarker(markerOptions);
+
+                     */
                 }
+                // 构建热力图 HeatmapTileProvider
+                HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
+                builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
+                // Gradient 的设置可见参考手册
+                // 构造热力图对象
+                HeatmapTileProvider heatmapTileProvider = builder.build();
+                // 初始化 TileOverlayOptions
+                TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
+                tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+                // 向地图上添加 TileOverlayOptions 类对象
+                aMap.addTileOverlay(tileOverlayOptions);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -260,7 +289,7 @@ public class MainActivity extends AppCompatActivity
                     double lon=p_position.getDouble("longitude");
                     String city=p_position.getString("city");
                     PositionInfo p_info=new PositionInfo(p_poiid, p_pname, lat, lon, city);
-                    String searchAresult=p_pname+" "+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
+                    String searchAresult="地点："+p_pname+" 时间："+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
                     searchResult.add(searchAresult);
 
 //                    自定义marker
@@ -301,6 +330,12 @@ public class MainActivity extends AppCompatActivity
     };
 
 
+    private void loginState(){
+        SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
+        String username=sp.getString("username", null);
+        String password=sp.getString("password", null);
+        isLogin=sp.getBoolean("state", false);
+    }
 
     private void mapInit(){
         if(aMap ==null){
@@ -565,6 +600,8 @@ public class MainActivity extends AppCompatActivity
      *设置页面监听
      */
     private void setUpViewListener() {
+        Button userButton=findViewById(R.id.user_icon);
+        userButton.setOnClickListener(this);
         Button searButton = findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
         Button nextButton = findViewById(R.id.next_button);
@@ -690,6 +727,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            //点击用户按钮
+            case R.id.user_icon:
+                changeToUser();
+                break;
             //点击搜索按钮
             case R.id.search_button:
                 searchButton();
@@ -716,6 +757,22 @@ public class MainActivity extends AppCompatActivity
             default:
                 break;
         }
+    }
+
+    /**
+     *点击用户按钮
+     */
+    public void changeToUser() {
+
+        if(!isLogin){
+            Intent intent=new Intent(MainActivity.this, UserLoginActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     /**
