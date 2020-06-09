@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -32,6 +34,7 @@ import com.google.gson.Gson;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -83,11 +86,12 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
-        implements AMapLocationListener, PoiSearch.OnPoiSearchListener, View.OnClickListener, TextWatcher
+        implements AMapLocationListener, View.OnClickListener, PoiSearchFragment.Mylistener
 {
     // protection level 的区间划分
     private double level_1=1000;
     private double level_2=5000;
+    private int mode=0; // 0表示热图，1表示点
 
     private MapView mapView;
     private AMap aMap;
@@ -114,7 +118,9 @@ public class MainActivity extends AppCompatActivity
     private Calendar cal;   //当前时间
     Toolbar toolbar;
     private int year,month,day;
-
+    private FragmentManager fragmentManager;  //Fragment 管理器
+    private FragmentTransaction fragmentTransaction;  //Fragment 事务处理
+    PoiSearchFragment fragment1;
 
     private boolean poisitionIsChosen;    // 判断是否已经选择地点
     String nowCity; //现在定位的城市
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity
     PositionInfo focusPoi;  //查找的位置
     String startTime, endTime;
     int timePeriod, protectionLevel;
-    boolean sendNotice, isLogin;
+    boolean sendNotice, isLogin, isLocated=false;
 
     Thread thread1, thread2;
 
@@ -154,6 +160,11 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+//        @Override
+//        public void thanks(String code) {
+//            // TODO Auto-generated method stub
+//            Toast.makeText(this, "已收到Fragment的消息：--"+code+"--,客气了", Toast.LENGTH_SHORT).show();
+
         FloatingActionButton fab=findViewById(R.id.fab_addTask);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,8 +173,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
-
-
     }
 
     /**
@@ -205,42 +214,47 @@ public class MainActivity extends AppCompatActivity
 
                     latlngs[i] = new LatLng(lat, lon);
 
-                    /*
-                    Bitmap virusBitmap;
+
+                    if(mode==1){
+                        Bitmap virusBitmap;
 //                    自定义marker
-                    if (level<level_1){
-                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
-                    }
-                    else if(level<level_2){
-                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
-                    }
-                    else{
-                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
-                    }
+                        if (level<level_1){
+                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
+                        }
+                        else if(level<level_2){
+                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                        }
+                        else{
+                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
+                        }
 //                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
-                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
-                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
-                    LatLng latLng = new LatLng(lat, lon);
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            //必须，设置经纬度
-                            .position(latLng);
-                    markerOptions.icon(virusIcon);
+                        virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+                        BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+                        LatLng latLng = new LatLng(lat, lon);
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                //必须，设置经纬度
+                                .position(latLng);
+                        markerOptions.icon(virusIcon);
 
-                    aMap.addMarker(markerOptions);
+                        aMap.addMarker(markerOptions);
 
-                     */
+                    }
+
+
                 }
-                // 构建热力图 HeatmapTileProvider
-                HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
-                builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
-                // Gradient 的设置可见参考手册
-                // 构造热力图对象
-                HeatmapTileProvider heatmapTileProvider = builder.build();
-                // 初始化 TileOverlayOptions
-                TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
-                tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
-                // 向地图上添加 TileOverlayOptions 类对象
-                aMap.addTileOverlay(tileOverlayOptions);
+                if(mode==0){
+                    // 构建热力图 HeatmapTileProvider
+                    HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
+                    builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
+                    // Gradient 的设置可见参考手册
+                    // 构造热力图对象
+                    HeatmapTileProvider heatmapTileProvider = builder.build();
+                    // 初始化 TileOverlayOptions
+                    TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
+                    tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+                    // 向地图上添加 TileOverlayOptions 类对象
+                    aMap.addTileOverlay(tileOverlayOptions);
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -472,9 +486,17 @@ public class MainActivity extends AppCompatActivity
                     nowLon=amapLocation.getLongitude();
 
                     nowCity =amapLocation.getCity();
-//                    editCity = findViewById(R.id.city);
-//                    editCity.setText(nowCity);
 
+                    if(!isLocated){
+                        fragment1=new PoiSearchFragment(nowCity);
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment_poi_search,fragment1);
+                        fragmentTransaction.commit();
+                    }
+
+                    isLocated=true;
+                    mode=1;
                     // 开子线程与后台交互数据
                     thread1.start();
 
@@ -498,6 +520,7 @@ public class MainActivity extends AppCompatActivity
     /**
      *开始进行poi搜索
      */
+    /*
     protected void doSearchQuery() {
 
         currentPage = 0;
@@ -510,10 +533,11 @@ public class MainActivity extends AppCompatActivity
         poiSearch.searchPOIAsyn();
 
     }
-
+*/
     /**
      *poi没有搜索到数据，返回一些推荐城市的信息
      */
+    /*
     private void showSuggestCity(List<SuggestionCity> cities) {
         String infomation = "推荐城市\n";
         for (int i = 0; i < cities.size(); i++) {
@@ -523,7 +547,8 @@ public class MainActivity extends AppCompatActivity
         }
         showToast(infomation);
     }
-
+*/
+    /*
     @Override
     public void onPoiSearched(PoiResult result, int rCode) {
         if (rCode == AMapException.CODE_AMAP_SUCCESS) {
@@ -596,17 +621,19 @@ public class MainActivity extends AppCompatActivity
     public void onPoiItemSearched(PoiItem poiItem, int i) {
 
     }
-
+*/
     /**
      *设置页面监听
      */
     private void setUpViewListener() {
+        Log.i("set listener","success");
+
         Button userButton=findViewById(R.id.user_icon);
         userButton.setOnClickListener(this);
         Button searButton = findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
-        Button nextButton = findViewById(R.id.next_button);
-        nextButton.setOnClickListener(this);
+//        Button nextButton = findViewById(R.id.next_button);
+//        nextButton.setOnClickListener(this);
         Button searchIconButton =findViewById(R.id.search_icon);
         searchIconButton.setOnClickListener(this);
         Button changeToListButton =findViewById(R.id.change_to_list);
@@ -614,8 +641,8 @@ public class MainActivity extends AppCompatActivity
         Button mapIconButton =findViewById(R.id.map_icon);
         mapIconButton.setOnClickListener(this);
 
-        searchText = findViewById(R.id.keyWord);
-        searchText.addTextChangedListener(this);// 添加文本输入框监听事件
+//        searchText = findViewById(R.id.keyWord);
+//        searchText.addTextChangedListener(this);// 添加文本输入框监听事件
 //        editCity = findViewById(R.id.city);
 //        editCity.setText(nowCity);  // 城市默认为当前定位的城市
 
@@ -710,17 +737,6 @@ public class MainActivity extends AppCompatActivity
                     view.setVisibility(View.GONE);
                 }
             }
-//            else  {
-//                if (ev.getY() > top || ev.getRawY() < (location2[1]+layout.getHeight())){
-//                    view.setVisibility(View.VISIBLE);
-//                    Log.i("show search result", "点击的是搜索框");
-//                }
-//                else {
-//                    view.setVisibility(View.GONE);
-//                    Log.i("show search result", "点击的是搜索框外的地图");
-//                }
-//            }
-//            poiListView.setVisibility(View.GONE);
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -737,9 +753,9 @@ public class MainActivity extends AppCompatActivity
                 searchButton();
                 break;
             //点击下一页按钮
-            case R.id.next_button:
-                nextButton();
-                break;
+//            case R.id.next_button:
+//                nextButton();
+//                break;
             case R.id.search_icon:
                 searchIconButton();
                 break;
@@ -797,6 +813,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * 点击下一页按钮
      */
+    /*
     public void nextButton() {
         if (query != null && poiSearch != null && poiResult != null) {
             if (poiResult.getPageCount() - 1 > currentPage) {
@@ -808,6 +825,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+     */
 
     /**
      * 点击search icon
@@ -844,6 +862,7 @@ public class MainActivity extends AppCompatActivity
      */
     public void showInitMap(){
         aMap.clear();
+        mode=1-mode;
         Thread thread =new Thread(runnable);
         thread.start();
 
@@ -943,6 +962,7 @@ public class MainActivity extends AppCompatActivity
      * @param after
      * 下面三个函数都是关于地点搜索框的
      */
+    /*
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         poiListView.setVisibility(View.GONE);
@@ -974,10 +994,11 @@ public class MainActivity extends AppCompatActivity
             Log.i("自动提示框", content);
         }
     }
-
+*/
     /**
      *在确认点击条目后，搜索栏会隐藏
      */
+    /*
     @Override
     public void afterTextChanged(Editable s) {
         if(poisitionIsChosen){
@@ -989,28 +1010,7 @@ public class MainActivity extends AppCompatActivity
             poiListView.setVisibility(View.VISIBLE);
         }
     }
-
-    /**
-     *处理get请求
      */
-    public static String getHttpResult(String urlStr){
-        try {
-            URL url=new URL(urlStr);
-            HttpURLConnection connect=(HttpURLConnection)url.openConnection();
-            InputStream input=connect.getInputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(input));
-            String line = null;
-            System.out.println(connect.getResponseCode());
-            StringBuffer sb = new StringBuffer();
-            while ((line = in.readLine()) != null) {
-                sb.append(line);
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return null;
-        }
-    }
 
     /**
      *post当前位置，获得病例信息
@@ -1049,4 +1049,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public void fragToAct(PositionInfo code) {
+        focusPoi=code;
+        Log.i("f-a", "已收到Fragment的消息");
+    }
 }

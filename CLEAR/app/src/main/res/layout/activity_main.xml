@@ -50,51 +50,12 @@
             android:background="#ffffff"
             android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="250dp"
-                android:layout_height="wrap_content">
-
-                <AutoCompleteTextView
-                    android:id="@+id/keyWord"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:completionThreshold="1"
-                    android:dropDownVerticalOffset="1.0dip"
-                    android:hint="请输入关键字"
-                    android:imeOptions="actionDone"
-                    android:inputType="text|textAutoComplete"
-                    android:maxLength="20"
-                    android:paddingRight="37.0dip"
-                    android:singleLine="true"
-                    android:textColor="#000000"
-                    android:textSize="16.0sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:layout_width="80dp"-->
-<!--                android:layout_height="wrap_content">-->
-
-<!--                <EditText-->
-<!--                    android:id="@+id/city"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:hint="请输入城市"-->
-<!--                    android:imeOptions="actionDone"-->
-<!--                    android:singleLine="true"-->
-<!--                    android:textColor="#000000"-->
-<!--                    android:textSize="16.0sp"/>-->
-
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
-
-            <Button
-                android:id="@+id/next_button"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/fragment_poi_search"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="地点下一页" />
+                android:orientation="horizontal" />
 
         </LinearLayout>
 
@@ -106,12 +67,12 @@
             android:background="#ffffff">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="300dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/start_time"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="预计开始时间"
@@ -133,7 +94,7 @@
             android:background="#ffffff">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="300dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
@@ -211,13 +172,11 @@
                 android:layout_weight="1"
                 android:text="开始搜索" />
         </LinearLayout>
+
+
     </LinearLayout>
-<!--    <fragment-->
-<!--        android:layout_marginTop="50dp"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:id="@+id/fragment_search_input"-->
-<!--        android:name="com.example.clear.SearchInput"/>-->
+
+
 
     <ListView
         android:id="@+id/poi_list"
@@ -244,43 +203,5 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"/>
-<!--    <LinearLayout-->
-<!--        android:layout_marginTop="150dp"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="500dp"-->
-<!--        android:id="@+id/fragment_poi_list"-->
-<!--        android:orientation="horizontal" />-->
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content">-->
-<!--        <Button-->
-<!--            android:id="@+id/btn_icon"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:layout_width="50dp"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginStart="40dp"-->
-<!--            android:background="@drawable/avatar" />-->
-<!--        <androidx.appcompat.widget.SearchView-->
-<!--            android:id="@+id/search_view"-->
-<!--            android:layout_width="200dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:layout_marginTop="20dp" />-->
-<!--    </LinearLayout>-->
-<!--    <Button-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:background="@drawable/scan"-->
-<!--        android:layout_marginTop="80dp"-->
-<!--        android:layout_marginLeft="40dp"/>-->
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/fab_addTask"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:src="@drawable/add"-->
-<!--        android:background="@color/icons"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        android:layout_marginEnd="16dp"/>-->
 
 </RelativeLayout>
