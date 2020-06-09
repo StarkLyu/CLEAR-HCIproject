@@ -51,7 +51,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
@@ -72,29 +72,29 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="80dp"
-                android:layout_height="wrap_content">
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:layout_width="80dp"-->
+<!--                android:layout_height="wrap_content">-->
 
-                <EditText
-                    android:id="@+id/city"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="请输入城市"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
-                    android:textColor="#000000"
-                    android:textSize="16.0sp"/>
+<!--                <EditText-->
+<!--                    android:id="@+id/city"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:hint="请输入城市"-->
+<!--                    android:imeOptions="actionDone"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:textColor="#000000"-->
+<!--                    android:textSize="16.0sp"/>-->
 
-            </com.google.android.material.textfield.TextInputLayout>
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
             <Button
                 android:id="@+id/next_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="下一页" />
+                android:text="地点下一页" />
 
         </LinearLayout>
 
@@ -106,7 +106,7 @@
             android:background="#ffffff">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content">
 
                 <EditText
@@ -115,6 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="预计开始时间"
+                    android:focusable="false"
                     android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textColor="#000000"
@@ -122,8 +123,17 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="5dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff">
+
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content">
 
                 <EditText
@@ -132,11 +142,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="预计结束时间"
+                    android:focusable="false"
                     android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textColor="#000000"
                     android:textSize="16.0sp"/>
-
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -208,20 +218,22 @@
 <!--        android:layout_height="wrap_content"-->
 <!--        android:id="@+id/fragment_search_input"-->
 <!--        android:name="com.example.clear.SearchInput"/>-->
+
     <ListView
         android:id="@+id/poi_list"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="310dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff">
     </ListView>
     <ListView
         android:id="@+id/search_result_list"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="310dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff">
     </ListView>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_addTask"
         android:layout_width="wrap_content"

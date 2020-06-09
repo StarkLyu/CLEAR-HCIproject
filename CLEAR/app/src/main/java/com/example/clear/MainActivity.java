@@ -472,8 +472,8 @@ public class MainActivity extends AppCompatActivity
                     nowLon=amapLocation.getLongitude();
 
                     nowCity =amapLocation.getCity();
-                    editCity = findViewById(R.id.city);
-                    editCity.setText(nowCity);
+//                    editCity = findViewById(R.id.city);
+//                    editCity.setText(nowCity);
 
                     // 开子线程与后台交互数据
                     thread1.start();
@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity
     protected void doSearchQuery() {
 
         currentPage = 0;
-        query = new PoiSearch.Query(keyWord, "", editCity.getText().toString());// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
+        query = new PoiSearch.Query(keyWord, "", nowCity);// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query.setPageSize(10);// 设置每页最多返回多少条poiitem
         query.setPageNum(currentPage);// 设置查第一页
 
@@ -616,8 +616,8 @@ public class MainActivity extends AppCompatActivity
 
         searchText = findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
-        editCity = findViewById(R.id.city);
-        editCity.setText(nowCity);  // 城市默认为当前定位的城市
+//        editCity = findViewById(R.id.city);
+//        editCity.setText(nowCity);  // 城市默认为当前定位的城市
 
         startTimeView=findViewById(R.id.start_time);
         startTimeView.setOnClickListener(this);
@@ -957,7 +957,7 @@ public class MainActivity extends AppCompatActivity
         }
         else {
             keyWord=content;
-            String city = editCity.getText().toString();
+            String city = nowCity;
             if (poisitionIsChosen) {
 //                aMap.clear();
                 LatLng latLng = new LatLng(focusPoi.getLatitude(), focusPoi.getLongitude());
