@@ -2,6 +2,7 @@ package com.example.clear;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.umeng.commonsdk.UMConfigure;
@@ -31,6 +32,9 @@ public class ClearApplication extends Application {
             public void onSuccess(String deviceToken) {
                 //注册成功会返回deviceToken deviceToken是推送消息的唯一标志
                 Log.i(TAG,"注册成功：deviceToken：-------->  " + deviceToken);
+
+                SharedPreferences sp = getSharedPreferences("device", Context.MODE_PRIVATE);
+                sp.edit().putString("token", deviceToken).apply();
             }
             @Override
             public void onFailure(String s, String s1) {

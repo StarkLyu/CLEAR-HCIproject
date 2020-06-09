@@ -26,6 +26,7 @@ import org.json.JSONException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class UserLoginActivity extends AppCompatActivity {
 
@@ -33,7 +34,7 @@ public class UserLoginActivity extends AppCompatActivity {
     //用户名，密码，再次输入的密码的控件
     private EditText et_user_name,et_psw;
     //用户名，密码，再次输入的密码的控件的获取值
-    private String userName,psw;
+    private String userName,psw,device;
     Boolean state=false;
     Thread thread1;
     ProgressBar progressBar;
@@ -60,11 +61,8 @@ public class UserLoginActivity extends AppCompatActivity {
         et_psw.setText(sp.getString("password", null));
         state=sp.getBoolean("state", false);
 
-//        if(state){
-//            Toast.makeText(UserLoginActivity.this, "已登录", Toast.LENGTH_SHORT).show();
-//            Intent intent=new Intent(UserLoginActivity.this, UserInfoActivity.class);
-//            startActivity(intent);
-//        }
+        SharedPreferences sp2 = getSharedPreferences("device", Context.MODE_PRIVATE);
+        device=sp2.getString("token", null);
 
         //注册按钮
         btn_register.setOnClickListener(new View.OnClickListener() {
@@ -90,15 +88,9 @@ public class UserLoginActivity extends AppCompatActivity {
                 else{
                     Log.i("user info", userName+" "+psw);
                     progressBar.setVisibility(View.VISIBLE);
+
                     thread1=new Thread(runnable);
                     thread1.start();
-
-//                    if (!state) {
-//                        Toast.makeText(UserLoginActivity.this, "该用户不存在", Toast.LENGTH_SHORT).show();
-//                    }else{
-//                        Toast.makeText(UserLoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
-//
-//                    }
                 }
             }
         });
@@ -111,21 +103,12 @@ public class UserLoginActivity extends AppCompatActivity {
         userName=et_user_name.getText().toString().trim();
         psw=et_psw.getText().toString().trim();
     }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(data!=null){
-//            // getExtra().getString("***");
-//            String userName=data.getStringExtra("userName");
-//            if(!TextUtils.isEmpty(userName)){
-//                //设置用户名到 et_user_name 控件
-//                et_user_name.setText(userName);
-//                //et_user_name控件的setSelection()方法来设置光标位置
-//                et_user_name.setSelection(userName.length());
-//            }
-//        }
-//    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+//        Log.i("transform", Objects.requireNonNull(data.getStringExtra("city")));
+    }
 
     /**
      *获取后台数据
@@ -146,38 +129,33 @@ public class UserLoginActivity extends AppCompatActivity {
     Runnable runnable = new Runnable(){
         @Override
         public void run() {
-            String post=userLogin(userName,psw);
-            Log.i("post request", userName+" "+psw);
+            String post=userLogin(userName,psw,device);
+            Log.i("post request", userName+" "+psw+" "+device);
             Log.i("post response",post);
-
-//            ProgressBar progressBar = findViewById(R.id.spin_kit);
-//            Sprite doubleBounce = new DoubleBounce();
-//            progressBar.setIndeterminateDrawable(doubleBounce);
 
 //            解析json
             try {
 //                JSONArray jsonArray=new JSONArray(post);
 
                 if (post.equals("not exsits")){
-                    state=false;
-//                    progressBar.setVisibility(View.GONE);
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"登录失败",Toast.LENGTH_SHORT).show();
                     Looper.loop();
 
                 }
                 else{
-                    state=true;
-//                    progressBar.setVisibility(View.GONE);
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
                     sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
 
-                    UserLoginActivity.this.finish();
+                    Intent intent = new Intent();
+                    intent.putExtra("transform", "changzhou"); //放置要传出的数据
+                    //这里是在Recycleview的适配器里，传了一个Activity才能用方法setResult
+                    setResult(1,intent);
+                    finish();
 
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"登录成功",Toast.LENGTH_SHORT).show();
                     Looper.loop();
-
 
                 }
 
@@ -195,14 +173,15 @@ public class UserLoginActivity extends AppCompatActivity {
     };
 
     /**
-     *post注册信息
+     *post登录信息
      */
-    public static String userLogin(String username, String password){
+    public static String userLogin(String username, String password, String device){
 
         String h="http://175.24.72.189/index.php?r=user/login";
         Map<String,Object> mmap=new LinkedHashMap<>();
         mmap.put("userName", username);
         mmap.put("password", password);
+        mmap.put("device", device);
         Gson gson=new Gson();
         String json=gson.toJson(mmap);
         PostInfo postInfo=new PostInfo(h,json);

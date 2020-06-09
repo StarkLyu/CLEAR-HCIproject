@@ -11,14 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".UserInfoActivity"></activity>
-        <activity android:name=".UserRegisterActivity" />
-        <activity android:name=".UserLoginActivity" />
+        <activity android:name=".UserInfoActivity"
+            android:launchMode="standard"/>
+        <activity android:name=".UserRegisterActivity"
+            android:launchMode="standard"/>
+        <activity android:name=".UserLoginActivity"
+            android:launchMode="standard"/>
         <activity
             android:name=".PatientInActivity"
             android:label="@string/title_activity_patient"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:launchMode="standard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

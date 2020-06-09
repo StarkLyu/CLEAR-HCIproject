@@ -2,6 +2,7 @@ package com.example.clear;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -124,6 +125,11 @@ public class UserRegisterActivity extends AppCompatActivity {
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
                     sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
 
+//                    Intent intent = new Intent();
+//                    intent.putExtra("transform", "changzhou"); //放置要传出的数据
+//                    //这里是在Recycleview的适配器里，传了一个Activity才能用方法setResult
+//                    UserRegisterActivity.this.setResult(1,intent);
+
                     // 表示此页面下的内容操作成功将data返回到上一页面，如果是用back返回过去的则不存在用setResult传递data值
                     UserRegisterActivity.this.finish();
 
@@ -166,7 +172,5 @@ public class UserRegisterActivity extends AppCompatActivity {
         PostInfo postInfo=new PostInfo(h,json);
         return postInfo.postMethod();
     }
-
-
 
 }
