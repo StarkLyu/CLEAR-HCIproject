@@ -30,7 +30,7 @@ import java.util.Objects;
 
 public class UserLoginActivity extends AppCompatActivity {
 
-    private Button btn_register, btn_login;//注册按钮
+    private Button btn_register, btn_login, btn_return;//注册按钮
     //用户名，密码，再次输入的密码的控件
     private EditText et_user_name,et_psw;
     //用户名，密码，再次输入的密码的控件的获取值
@@ -51,6 +51,7 @@ public class UserLoginActivity extends AppCompatActivity {
         //从activity_register.xml 页面中获取对应的UI控件
         btn_register=findViewById(R.id.btn_register);
         btn_login=findViewById(R.id.btn_login);
+        btn_return=findViewById(R.id.return_icon);
         progressBar=findViewById(R.id.spin_kit);
 
         //展示保存的登录信息
@@ -96,6 +97,13 @@ public class UserLoginActivity extends AppCompatActivity {
                     thread1=new Thread(runnable);
                     thread1.start();
                 }
+            }
+        });
+
+        btn_return.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 

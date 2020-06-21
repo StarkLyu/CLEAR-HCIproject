@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class UserInfoActivity extends AppCompatActivity {
 
-    private Button btn_relogin;
+    private Button btn_relogin, btn_return;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +27,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private void init() {
 
         btn_relogin=findViewById(R.id.btn_re_login);
+        btn_return=findViewById(R.id.return_icon);
 
         //注册按钮
         btn_relogin.setOnClickListener(new View.OnClickListener() {
@@ -35,6 +36,13 @@ public class UserInfoActivity extends AppCompatActivity {
                 //获取输入在相应控件中的字符串
                 Intent intent=new Intent(UserInfoActivity.this, UserLoginActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        btn_return.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                finish();
             }
         });
     }
