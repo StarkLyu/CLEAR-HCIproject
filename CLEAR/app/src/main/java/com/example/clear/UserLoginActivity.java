@@ -35,7 +35,6 @@ public class UserLoginActivity extends AppCompatActivity {
     private EditText et_user_name,et_psw;
     //用户名，密码，再次输入的密码的控件的获取值
     private String userName,psw,device;
-    Boolean state=false;
     Thread thread1;
     ProgressBar progressBar;
 
@@ -52,14 +51,18 @@ public class UserLoginActivity extends AppCompatActivity {
         //从activity_register.xml 页面中获取对应的UI控件
         btn_register=findViewById(R.id.btn_register);
         btn_login=findViewById(R.id.btn_login);
-        et_user_name=findViewById(R.id.et_user_name);
-        et_psw=findViewById(R.id.et_psw);
         progressBar=findViewById(R.id.spin_kit);
 
+        //展示保存的登录信息
+        et_user_name=findViewById(R.id.et_user_name);
+        et_psw=findViewById(R.id.et_psw);
+
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
-        et_user_name.setText(sp.getString("username", null));
-        et_psw.setText(sp.getString("password", null));
-        state=sp.getBoolean("state", false);
+        userName=sp.getString("username", null);
+        psw=sp.getString("password",null);
+
+        et_user_name.setText(userName);
+        et_psw.setText(psw);
 
         SharedPreferences sp2 = getSharedPreferences("device", Context.MODE_PRIVATE);
         device=sp2.getString("token", null);
@@ -69,7 +72,8 @@ public class UserLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(UserLoginActivity.this, UserRegisterActivity.class);
-                startActivity(intent);
+//                startActivity(intent);
+                startActivityForResult(intent,100);
             }
         });
 
@@ -107,7 +111,20 @@ public class UserLoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        Log.i("transform", Objects.requireNonNull(data.getStringExtra("city")));
+        if(requestCode!=100)
+            return;
+        if(resultCode!=1)
+            return;
+
+        Log.i("transform","run");
+        userName=data.getStringExtra("username");
+        psw=data.getStringExtra("password");
+
+        et_user_name=findViewById(R.id.et_user_name);
+        et_psw=findViewById(R.id.et_psw);
+
+        et_user_name.setText(userName);
+        et_psw.setText(psw);
     }
 
     /**

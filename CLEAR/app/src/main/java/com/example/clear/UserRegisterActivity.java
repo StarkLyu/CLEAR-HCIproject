@@ -131,7 +131,12 @@ public class UserRegisterActivity extends AppCompatActivity {
 //                    UserRegisterActivity.this.setResult(1,intent);
 
                     // 表示此页面下的内容操作成功将data返回到上一页面，如果是用back返回过去的则不存在用setResult传递data值
-                    UserRegisterActivity.this.finish();
+
+                    Intent intent = new Intent();
+                    intent.putExtra("username", userName);
+                    intent.putExtra("password",psw);
+                    setResult(1, intent);
+                    finish();
 
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"注册成功",Toast.LENGTH_SHORT).show();
