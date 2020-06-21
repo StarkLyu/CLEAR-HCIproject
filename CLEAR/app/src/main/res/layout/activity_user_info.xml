@@ -18,12 +18,24 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"/>
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="25sp"
+            android:text="用户二维码"/>
+        <ImageView
+            android:id="@+id/myimg"
+            android:layout_width="250dp"
+            android:layout_gravity="center"
+            android:layout_height="250dp"
+            />
+        <TextView
             android:id="@+id/tv_main_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
             android:layout_gravity="center_horizontal"
-            android:textSize="30sp"
+            android:textSize="25sp"
             android:text="历史搜索记录"/>
         <ListView
             android:id="@+id/history_search_result_list"

@@ -124,7 +124,6 @@ public class UserLoginActivity extends AppCompatActivity {
         if(resultCode!=1)
             return;
 
-        Log.i("transform","run");
         userName=data.getStringExtra("username");
         psw=data.getStringExtra("password");
 

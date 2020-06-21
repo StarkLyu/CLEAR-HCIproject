@@ -61,6 +61,9 @@ dependencies {
     // Testing Navigation
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
+    // 二维码
+    implementation 'com.github.yuzhiqiang1993:zxing:2.2.5'
+
     api 'com.alibaba:fastjson:1.1.71.android'
 
     //PushSDK必须依赖基础组件库，所以需要加入对应依赖
