@@ -26,6 +26,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private Button btn_relogin, btn_return;
     private ImageView img;
+    int role=0;
 
 
     @Override
@@ -33,13 +34,13 @@ public class UserInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
-        //用每个用户的device token生成二维码
-        SharedPreferences sp2 = getSharedPreferences("device", Context.MODE_PRIVATE);
-        String device=sp2.getString("token", null);
+        //用每个用户的username生成二维码
+        SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
+        String userName=sp.getString("username",null);
 
         img = findViewById(R.id.myimg);
         Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        Bitmap bitmap = CodeCreator.createQRCode(device, 400, 400, logo);
+        Bitmap bitmap = CodeCreator.createQRCode(userName, 400, 400, logo);
         img.setImageBitmap(bitmap);
 
         init();
@@ -63,6 +64,11 @@ public class UserInfoActivity extends AppCompatActivity {
         btn_return.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                Intent intent = new Intent();
+                intent.putExtra("role", role);
+//                    intent.putExtra("password",psw);
+                setResult(1, intent);
+                finish();
                 finish();
             }
         });
@@ -75,5 +81,8 @@ public class UserInfoActivity extends AppCompatActivity {
             return;
         if(resultCode!=1)
             return;
+
+        role=data.getIntExtra("role",0);
+        Log.i("role transform userinfo",role+"");
     }
 }

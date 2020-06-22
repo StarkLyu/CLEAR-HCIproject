@@ -183,7 +183,7 @@ public class UserLoginActivity extends AppCompatActivity {
                     sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).putInt("role",role).apply();
 
                     Intent intent = new Intent();
-//                    intent.putExtra("username", userName);
+                    intent.putExtra("role", role);
 //                    intent.putExtra("password",psw);
                     setResult(1, intent);
                     finish();

@@ -30,6 +30,8 @@ import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
 
 
 import android.Manifest;
@@ -630,6 +632,8 @@ public class MainActivity extends AppCompatActivity
      */
     public void scan(){
         Log.i("scan", "点击了扫描二维码按钮");
+        Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+        startActivityForResult(intent, 200);
     }
 
     /**
@@ -834,5 +838,25 @@ public class MainActivity extends AppCompatActivity
     public void fragToAct(PositionInfo code) {
         focusPoi=code;
         Log.i("f-a", "已收到Fragment的消息");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //子activity传回来的角色信息
+        if(requestCode==100 && resultCode==1){
+            role=data.getIntExtra("role",0);
+            Log.i("role transform main",role+"");
+        }
+
+        // 扫描二维码/条码回传
+        if (requestCode == 200 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+//                result.setText("扫描结果为：" + content);
+                showToast(content);
+            }
+        }
+
     }
 }
