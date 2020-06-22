@@ -41,6 +41,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -328,12 +329,24 @@ public class MainActivity extends AppCompatActivity
 
             switch (post){
                 case "200":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"授权患者成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     break;
                 case "400":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"未输入患者的用户名",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     break;
                 case "401":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"未登录或不是医生",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     break;
                 case "403":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"患者不存在",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     break;
                 default:
                     break;
