@@ -71,8 +71,9 @@ public class UserInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String city="kong";
-        city+=Objects.requireNonNull(data.getStringExtra("city"));
-        Log.i("transform", city);
+        if(requestCode!=100)
+            return;
+        if(resultCode!=1)
+            return;
     }
 }

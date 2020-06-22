@@ -105,10 +105,8 @@ public class MainActivity extends AppCompatActivity
     MyLocationStyle myLocationStyle;
 
     // 组件
-    private AutoCompleteTextView searchText;// 输入搜索关键字
     TextView startTimeView, endTimeView, timePeriodView;  // 输入组件
     private Calendar cal;   //当前时间
-    Toolbar toolbar;
     private int year,month,day;
     private FragmentManager fragmentManager;  //Fragment 管理器
     private FragmentTransaction fragmentTransaction;  //Fragment 事务处理
@@ -120,7 +118,7 @@ public class MainActivity extends AppCompatActivity
     //搜索周围病例的request
     PositionInfo focusPoi;  //查找的位置
     String startTime, endTime;
-    int timePeriod, protectionLevel;
+    int timePeriod, protectionLevel, role;  //role代表用户角色
     boolean sendNotice, isLogin, isLocated=false;
 
     Thread thread1, thread2;
@@ -332,9 +330,9 @@ public class MainActivity extends AppCompatActivity
 
     private void loginState(){
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
-        String username=sp.getString("username", null);
-        String password=sp.getString("password", null);
+        role=sp.getInt("role",0);
         isLogin=sp.getBoolean("state", false);
+
     }
 
     private void mapInit(){
@@ -518,6 +516,19 @@ public class MainActivity extends AppCompatActivity
         changeToListButton.setOnClickListener(this);
         Button mapIconButton =findViewById(R.id.map_icon);
         mapIconButton.setOnClickListener(this);
+        FloatingActionButton scanButton=findViewById(R.id.scan);
+        scanButton.setOnClickListener(this);
+        FloatingActionButton addButton=findViewById(R.id.fab_addTask);
+        addButton.setOnClickListener(this);
+
+        //角色不同，可见控件不同
+        if(role==1){
+            addButton.setVisibility(View.VISIBLE);
+        }
+        else if (role==2){
+            addButton.setVisibility(View.VISIBLE);
+            scanButton.setVisibility(View.VISIBLE);
+        }
 
         startTimeView=findViewById(R.id.start_time);
         startTimeView.setOnClickListener(this);
@@ -606,9 +617,19 @@ public class MainActivity extends AppCompatActivity
             case R.id.end_time:
                 showEndTime();
                 break;
+            case R.id.scan:
+                scan();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 点击扫描二维码的按钮
+     */
+    public void scan(){
+        Log.i("scan", "点击了扫描二维码按钮");
     }
 
     /**

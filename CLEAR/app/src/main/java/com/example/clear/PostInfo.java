@@ -76,7 +76,7 @@ public class PostInfo {
             }
             else {
                 System.out.println(response);
-                return "not exsits";
+                return response+"";
             }
         } catch (Exception e) {
             Log.e("e:", String.valueOf(e));

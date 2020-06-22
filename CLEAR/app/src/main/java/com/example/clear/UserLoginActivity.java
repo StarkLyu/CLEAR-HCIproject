@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -96,6 +97,8 @@ public class UserLoginActivity extends AppCompatActivity {
 
                     thread1=new Thread(runnable);
                     thread1.start();
+
+//                    progressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -116,6 +119,9 @@ public class UserLoginActivity extends AppCompatActivity {
         psw=et_psw.getText().toString().trim();
     }
 
+    /**
+     * 注册后返回注册的账号信息
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -157,35 +163,41 @@ public class UserLoginActivity extends AppCompatActivity {
             Log.i("post request", userName+" "+psw+" "+device);
             Log.i("post response",post);
 
-//            解析json
-            try {
-//                JSONArray jsonArray=new JSONArray(post);
-
-                if (post.equals("not exsits")){
-                    Looper.prepare();
-                    Toast.makeText(getApplicationContext(),"登录失败",Toast.LENGTH_SHORT).show();
-                    Looper.loop();
-
-                }
-                else{
+            if (post.equals("403")){
+                Looper.prepare();
+                Toast.makeText(getApplicationContext(),"登录失败，用户名不存在",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+            else if(post.equals("401")) {
+                Looper.prepare();
+                Toast.makeText(getApplicationContext(),"登录失败，密码错误",Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+            else{
+                //            解析json
+                try {
+                    JSONObject ob=new JSONObject(post);
+                    int role=ob.getInt("userStatus");
+                    Log.i("role",role+"");
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
-                    sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).apply();
+                    sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).putInt("role",role).apply();
 
                     Intent intent = new Intent();
-                    intent.putExtra("transform", "changzhou"); //放置要传出的数据
-                    //这里是在Recycleview的适配器里，传了一个Activity才能用方法setResult
-                    setResult(1,intent);
+//                    intent.putExtra("username", userName);
+//                    intent.putExtra("password",psw);
+                    setResult(1, intent);
                     finish();
 
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"登录成功",Toast.LENGTH_SHORT).show();
                     Looper.loop();
 
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
+
 
             Message msg = new Message();
             Bundle data = new Bundle();
