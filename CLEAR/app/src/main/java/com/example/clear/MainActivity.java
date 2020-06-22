@@ -150,14 +150,13 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        FloatingActionButton fab=findViewById(R.id.fab_addTask);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,PatientInActivity.class);
-                startActivity(intent);
-            }
-        });
+//        FloatingActionButton fab=findViewById(R.id.fab_addTask);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
     }
 
     /**
@@ -622,6 +621,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.scan:
                 scan();
                 break;
+            case R.id.fab_addTask:
+                addPatientInfo();
+                break;
             default:
                 break;
         }
@@ -634,6 +636,14 @@ public class MainActivity extends AppCompatActivity
         Log.i("scan", "点击了扫描二维码按钮");
         Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
         startActivityForResult(intent, 200);
+    }
+
+    /**
+     * 点击添加信息按钮
+     */
+    public void addPatientInfo(){
+        Intent intent=new Intent(MainActivity.this,PatientInActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -834,6 +844,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * post扫描得到的结果，让他变成患者
+     */
+    public static String changeUserToPatient(String username){
+
+        return null;
+    }
+
     @Override
     public void fragToAct(PositionInfo code) {
         focusPoi=code;
@@ -846,7 +864,7 @@ public class MainActivity extends AppCompatActivity
         //子activity传回来的角色信息
         if(requestCode==100 && resultCode==1){
             role=data.getIntExtra("role",0);
-            Log.i("role transform main",role+"");
+//            Log.i("role transform main",role+"");
         }
 
         // 扫描二维码/条码回传
@@ -855,6 +873,7 @@ public class MainActivity extends AppCompatActivity
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
 //                result.setText("扫描结果为：" + content);
                 showToast(content);
+                changeUserToPatient(content);
             }
         }
 
