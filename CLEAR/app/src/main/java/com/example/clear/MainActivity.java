@@ -2,7 +2,6 @@ package com.example.clear;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -23,11 +22,6 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.TileOverlayOptions;
-import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.core.SuggestionCity;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -36,7 +30,6 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
-import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -49,16 +42,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
@@ -72,11 +60,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +68,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements AMapLocationListener, View.OnClickListener, PoiSearchFragment.Mylistener
@@ -119,8 +101,8 @@ public class MainActivity extends AppCompatActivity
 
     //搜索周围病例的request
     PositionInfo focusPoi;  //查找的位置
-    String startTime, endTime;
-    int timePeriod, protectionLevel, role;  //role代表用户角色
+    String startTime, endTime, authToken;
+    int timePeriod, protectionLevel, role=0;  //role代表用户角色
     boolean sendNotice, isLogin, isLocated=false;
 
     Thread thread1, thread2;
@@ -332,8 +314,8 @@ public class MainActivity extends AppCompatActivity
     private void loginState(){
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
         role=sp.getInt("role",0);
+        authToken =sp.getString("authToken",null);
         isLogin=sp.getBoolean("state", false);
-
     }
 
     private void mapInit(){
@@ -505,8 +487,6 @@ public class MainActivity extends AppCompatActivity
      *设置页面监听
      */
     private void setUpViewListener() {
-        Log.i("set listener","success");
-
         Button userButton=findViewById(R.id.user_icon);
         userButton.setOnClickListener(this);
         Button searButton = findViewById(R.id.search_button);
@@ -810,8 +790,9 @@ public class MainActivity extends AppCompatActivity
     /**
      *post当前位置，获得病例信息
      */
-    public static String getHomepage(double lat, double lon, String city){
+    public String getHomepage(double lat, double lon, String city){
 
+        Log.i("token", authToken);
         String h="http://175.24.72.189/index.php?r=normal/homepage";
         Map<String,Object> mmap=new LinkedHashMap<>();
         mmap.put("latitude", lat);
@@ -820,6 +801,7 @@ public class MainActivity extends AppCompatActivity
         Gson gson=new Gson();
         String json=gson.toJson(mmap);
         PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
         return postInfo.postMethod();
 
     }
@@ -827,7 +809,8 @@ public class MainActivity extends AppCompatActivity
     /**
      *post search的地点，获得病例信息
      */
-    public static String getSearchPosition(PositionInfo positionInfo, String starttime, String endtime, int period, int protectionLevel, Boolean notice){
+    public String getSearchPosition(PositionInfo positionInfo, String starttime, String endtime, int period, int protectionLevel, Boolean notice){
+
 
         String h="http://175.24.72.189/index.php?r=normal/search";
         Map<String,Object> mmap=new LinkedHashMap<>();
@@ -840,6 +823,7 @@ public class MainActivity extends AppCompatActivity
         Gson gson=new Gson();
         String json=gson.toJson(mmap);
         PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
         return postInfo.postMethod();
 
     }
@@ -847,7 +831,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * post扫描得到的结果，让他变成患者
      */
-    public static String changeUserToPatient(String username){
+    public String changeUserToPatient(String username){
 
         return null;
     }

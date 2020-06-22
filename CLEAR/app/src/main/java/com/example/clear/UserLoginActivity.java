@@ -178,9 +178,16 @@ public class UserLoginActivity extends AppCompatActivity {
                 try {
                     JSONObject ob=new JSONObject(post);
                     int role=ob.getInt("userStatus");
+                    String auth=ob.getString("authToken");
                     Log.i("role",role+"");
                     SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
-                    sp.edit().putString("username", userName).putString("password", psw).putBoolean("state",true).putInt("role",role).apply();
+                    sp.edit()
+                            .putString("username", userName)
+                            .putString("password", psw)
+                            .putString("authToken", auth)
+                            .putBoolean("state",true)
+                            .putInt("role",role)
+                            .apply();
 
                     Intent intent = new Intent();
                     intent.putExtra("role", role);
