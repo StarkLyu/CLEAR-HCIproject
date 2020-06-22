@@ -101,11 +101,11 @@ public class MainActivity extends AppCompatActivity
 
     //搜索周围病例的request
     PositionInfo focusPoi;  //查找的位置
-    String startTime, endTime, authToken;
+    String startTime, endTime, authToken, scanUserName;
     int timePeriod, protectionLevel, role=0;  //role代表用户角色
     boolean sendNotice, isLogin, isLocated=false;
 
-    Thread thread1, thread2;
+    Thread thread1, thread2, thread3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -310,6 +310,43 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    Handler handler3= new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+
+        }
+    };
+
+    Runnable runnable3=new Runnable(){
+        @Override
+        public void run() {
+            String post=changeUserToPatient(scanUserName);
+            Log.i("post response",post);
+
+            switch (post){
+                case "200":
+                    break;
+                case "400":
+                    break;
+                case "401":
+                    break;
+                case "403":
+                    break;
+                default:
+                    break;
+            }
+
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("value","请求结果");
+
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
+    };
 
     private void loginState(){
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -633,11 +670,11 @@ public class MainActivity extends AppCompatActivity
 
         if(!isLogin){
             Intent intent=new Intent(MainActivity.this, UserLoginActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,100);
         }
         else{
             Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,100);
         }
 
     }
@@ -792,7 +829,6 @@ public class MainActivity extends AppCompatActivity
      */
     public String getHomepage(double lat, double lon, String city){
 
-        Log.i("token", authToken);
         String h="http://175.24.72.189/index.php?r=normal/homepage";
         Map<String,Object> mmap=new LinkedHashMap<>();
         mmap.put("latitude", lat);
@@ -810,7 +846,6 @@ public class MainActivity extends AppCompatActivity
      *post search的地点，获得病例信息
      */
     public String getSearchPosition(PositionInfo positionInfo, String starttime, String endtime, int period, int protectionLevel, Boolean notice){
-
 
         String h="http://175.24.72.189/index.php?r=normal/search";
         Map<String,Object> mmap=new LinkedHashMap<>();
@@ -832,8 +867,14 @@ public class MainActivity extends AppCompatActivity
      * post扫描得到的结果，让他变成患者
      */
     public String changeUserToPatient(String username){
-
-        return null;
+        String h="http://175.24.72.189/index.php?r=patient/recognize";
+        Map<String,Object> mmap=new LinkedHashMap<>();
+        mmap.put("userName", username);
+        Gson gson=new Gson();
+        String json=gson.toJson(mmap);
+        PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
+        return postInfo.postMethod();
     }
 
     @Override
@@ -848,7 +889,21 @@ public class MainActivity extends AppCompatActivity
         //子activity传回来的角色信息
         if(requestCode==100 && resultCode==1){
             role=data.getIntExtra("role",0);
-//            Log.i("role transform main",role+"");
+
+            FloatingActionButton scanButton=findViewById(R.id.scan);
+            scanButton.setOnClickListener(this);
+            FloatingActionButton addButton=findViewById(R.id.fab_addTask);
+            addButton.setOnClickListener(this);
+
+            //角色不同，可见控件不同
+            if(role==1){
+                addButton.setVisibility(View.VISIBLE);
+            }
+            else if (role==2){
+                addButton.setVisibility(View.VISIBLE);
+                scanButton.setVisibility(View.VISIBLE);
+            }
+            Log.i("role transform main",role+"");
         }
 
         // 扫描二维码/条码回传
@@ -857,7 +912,9 @@ public class MainActivity extends AppCompatActivity
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
 //                result.setText("扫描结果为：" + content);
                 showToast(content);
-                changeUserToPatient(content);
+                scanUserName=content;
+                thread3=new Thread(runnable3);
+                thread3.start();
             }
         }
 
