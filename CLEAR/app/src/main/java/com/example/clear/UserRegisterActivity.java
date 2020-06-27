@@ -35,7 +35,7 @@ import java.util.Map;
 
 public class UserRegisterActivity extends AppCompatActivity {
 
-    private Button btn_register;//注册按钮
+    private Button btn_register, btn_return;//注册按钮
     //用户名，密码，再次输入的密码的控件
     private EditText et_user_name,et_psw,et_tel;
     //用户名，密码，再次输入的密码的控件的获取值
@@ -54,6 +54,7 @@ public class UserRegisterActivity extends AppCompatActivity {
     private void init() {
         //从activity_register.xml 页面中获取对应的UI控件
         btn_register=findViewById(R.id.btn_register);
+        btn_return=findViewById(R.id.return_icon);
         et_user_name=findViewById(R.id.et_user_name);
         et_psw=findViewById(R.id.et_psw);
         et_tel=findViewById(R.id.et_tel);
@@ -81,6 +82,13 @@ public class UserRegisterActivity extends AppCompatActivity {
                     thread1=new Thread(runnable);
                     thread1.start();
                 }
+            }
+        });
+
+        btn_return.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                finish();
             }
         });
     }
@@ -131,7 +139,12 @@ public class UserRegisterActivity extends AppCompatActivity {
 //                    UserRegisterActivity.this.setResult(1,intent);
 
                     // 表示此页面下的内容操作成功将data返回到上一页面，如果是用back返回过去的则不存在用setResult传递data值
-                    UserRegisterActivity.this.finish();
+
+                    Intent intent = new Intent();
+                    intent.putExtra("username", userName);
+                    intent.putExtra("password",psw);
+                    setResult(1, intent);
+                    finish();
 
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"注册成功",Toast.LENGTH_SHORT).show();

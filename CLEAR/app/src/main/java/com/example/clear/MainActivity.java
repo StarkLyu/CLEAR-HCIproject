@@ -2,9 +2,10 @@ package com.example.clear;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -21,14 +22,18 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.TileOverlayOptions;
+
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.example.clear.danger.DangerCalculation;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
 
 
 import android.Manifest;
@@ -44,17 +49,13 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
@@ -82,14 +83,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
-        implements AMapLocationListener, PoiSearch.OnPoiSearchListener, View.OnClickListener, TextWatcher
+        implements AMapLocationListener, View.OnClickListener, PoiSearchFragment.Mylistener
 {
     // protection level 的区间划分
     private double level_1=1000;
     private double level_2=5000;
+    private int mode=0; // 0表示热图，1表示点
 
     private MapView mapView;
     private AMap aMap;
@@ -101,34 +102,25 @@ public class MainActivity extends AppCompatActivity
 
     //定位蓝点
     MyLocationStyle myLocationStyle;
-    //地点搜索
-    private String keyWord = "";// 要输入的poi搜索关键字
-    private PoiResult poiResult; // poi返回的结果
-    private int currentPage = 0;// 当前页面，从0开始计数
-    private PoiSearch.Query query;// Poi查询条件类
-    private PoiSearch poiSearch;// POI搜索
 
     // 组件
-    private AutoCompleteTextView searchText;// 输入搜索关键字
-    private TextView editCity;// 要输入的城市名字或者城市区号
-    private ListView poiListView;
     TextView startTimeView, endTimeView, timePeriodView;  // 输入组件
     private Calendar cal;   //当前时间
-    Toolbar toolbar;
     private int year,month,day;
+    private FragmentManager fragmentManager;  //Fragment 管理器
+    private FragmentTransaction fragmentTransaction;  //Fragment 事务处理
+    PoiSearchFragment fragment1;
 
-
-    private boolean poisitionIsChosen;    // 判断是否已经选择地点
     String nowCity; //现在定位的城市
     double nowLat, nowLon;  //现在定位的经纬度
 
     //搜索周围病例的request
     PositionInfo focusPoi;  //查找的位置
-    String startTime, endTime;
-    int timePeriod, protectionLevel;
-    boolean sendNotice, isLogin;
+    String startTime, endTime, authToken, scanUserName;
+    int timePeriod, protectionLevel, role=0;  //role代表用户角色
+    boolean sendNotice, isLogin, isLocated=false;
 
-    Thread thread1, thread2;
+    Thread thread1, thread2, thread3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +130,6 @@ public class MainActivity extends AppCompatActivity
 
         mapView = findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
-        poiListView = findViewById(R.id.poi_list);
         loginState();
         mapInit();
         getDate();
@@ -156,16 +147,13 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        FloatingActionButton fab=findViewById(R.id.fab_addTask);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,PatientInActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
+//        FloatingActionButton fab=findViewById(R.id.fab_addTask);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
     }
 
     /**
@@ -207,42 +195,47 @@ public class MainActivity extends AppCompatActivity
 
                     latlngs[i] = new LatLng(lat, lon);
 
-                    /*
-                    Bitmap virusBitmap;
+
+                    if(mode==1){
+                        Bitmap virusBitmap;
 //                    自定义marker
-                    if (level<level_1){
-                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
-                    }
-                    else if(level<level_2){
-                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
-                    }
-                    else{
-                        virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
-                    }
+                        if (level<level_1){
+                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
+                        }
+                        else if(level<level_2){
+                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                        }
+                        else{
+                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
+                        }
 //                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
-                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
-                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
-                    LatLng latLng = new LatLng(lat, lon);
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            //必须，设置经纬度
-                            .position(latLng);
-                    markerOptions.icon(virusIcon);
+                        virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+                        BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+                        LatLng latLng = new LatLng(lat, lon);
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                //必须，设置经纬度
+                                .position(latLng);
+                        markerOptions.icon(virusIcon);
 
-                    aMap.addMarker(markerOptions);
+                        aMap.addMarker(markerOptions);
 
-                     */
+                    }
+
+
                 }
-                // 构建热力图 HeatmapTileProvider
-                HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
-                builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
-                // Gradient 的设置可见参考手册
-                // 构造热力图对象
-                HeatmapTileProvider heatmapTileProvider = builder.build();
-                // 初始化 TileOverlayOptions
-                TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
-                tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
-                // 向地图上添加 TileOverlayOptions 类对象
-                aMap.addTileOverlay(tileOverlayOptions);
+                if(mode==0){
+                    // 构建热力图 HeatmapTileProvider
+                    HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
+                    builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
+                    // Gradient 的设置可见参考手册
+                    // 构造热力图对象
+                    HeatmapTileProvider heatmapTileProvider = builder.build();
+                    // 初始化 TileOverlayOptions
+                    TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
+                    tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+                    // 向地图上添加 TileOverlayOptions 类对象
+                    aMap.addTileOverlay(tileOverlayOptions);
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -339,11 +332,60 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    Handler handler3= new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+
+        }
+    };
+
+    Runnable runnable3=new Runnable(){
+        @Override
+        public void run() {
+            String post=changeUserToPatient(scanUserName);
+            Log.i("post response",post);
+
+            switch (post){
+                case "200":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"授权患者成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                    break;
+                case "400":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"未输入患者的用户名",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                    break;
+                case "401":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"未登录或不是医生",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                    break;
+                case "403":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"患者不存在",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                    break;
+                default:
+                    break;
+            }
+
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("value","请求结果");
+
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
+    };
 
     private void loginState(){
         SharedPreferences sp = getSharedPreferences("login", Context.MODE_PRIVATE);
-        String username=sp.getString("username", null);
-        String password=sp.getString("password", null);
+        role=sp.getInt("role",0);
+        authToken =sp.getString("authToken",null);
         isLogin=sp.getBoolean("state", false);
     }
 
@@ -481,9 +523,17 @@ public class MainActivity extends AppCompatActivity
                     nowLon=amapLocation.getLongitude();
 
                     nowCity =amapLocation.getCity();
-                    editCity = findViewById(R.id.city);
-                    editCity.setText(nowCity);
 
+                    if(!isLocated){
+                        fragment1=new PoiSearchFragment(nowCity);
+                        fragmentManager = getSupportFragmentManager();
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment_poi_search,fragment1);
+                        fragmentTransaction.commit();
+                    }
+
+                    isLocated=true;
+                    mode=1;
                     // 开子线程与后台交互数据
                     thread1.start();
 
@@ -505,108 +555,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *开始进行poi搜索
-     */
-    protected void doSearchQuery() {
-
-        currentPage = 0;
-        query = new PoiSearch.Query(keyWord, "", editCity.getText().toString());// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
-        query.setPageSize(10);// 设置每页最多返回多少条poiitem
-        query.setPageNum(currentPage);// 设置查第一页
-
-        poiSearch = new PoiSearch(this, query);
-        poiSearch.setOnPoiSearchListener(this);
-        poiSearch.searchPOIAsyn();
-
-    }
-
-    /**
-     *poi没有搜索到数据，返回一些推荐城市的信息
-     */
-    private void showSuggestCity(List<SuggestionCity> cities) {
-        String infomation = "推荐城市\n";
-        for (int i = 0; i < cities.size(); i++) {
-            infomation += "城市名称:" + cities.get(i).getCityName() + "城市区号:"
-                    + cities.get(i).getCityCode() + "城市编码:"
-                    + cities.get(i).getAdCode() + "\n";
-        }
-        showToast(infomation);
-    }
-
-    @Override
-    public void onPoiSearched(PoiResult result, int rCode) {
-        if (rCode == AMapException.CODE_AMAP_SUCCESS) {
-            if (result != null && result.getQuery() != null) {// 搜索poi的结果
-                if (result.getQuery().equals(query)) {// 是否是同一条
-                    poiResult = result;
-                    // 取得搜索到的poiitems有多少页
-                    final List<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-
-                    //将list数据传到poi list fragment中
-                    List poiListResult = new ArrayList<>();
-                    for (int i=0; i<poiItems.size(); i++){
-                        String item=poiItems.get(i).toString();
-//                        Log.i("poiItem"+i, item);
-                        poiListResult.add(item);
-                    }
-                    poisitionIsChosen=false;    // listview点击事件初始为false
-//                    Log.i("check line", "poi search");
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>
-                            (this, android.R.layout.simple_list_item_1, poiListResult);
-                    poiListView.setAdapter(adapter);
-                    //设置listview点击事件
-                    poiListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            PoiItem item = poiItems.get(i);
-//                            Toast.makeText(MainActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
-
-                            Log.i("choose position",
-                                    item.getPoiId()+" "+item.getLatLonPoint().getLatitude()+" "+item.getLatLonPoint().getLongitude()+" "+item.getTitle()+" "+item.getCityName());
-
-                            // 存储搜索的地点信息
-                            focusPoi=new PositionInfo();
-                            focusPoi.setPositionID(item.getPoiId());
-                            focusPoi.setPositionName(item.getTitle());
-                            focusPoi.setLatitude(item.getLatLonPoint().getLatitude());
-                            focusPoi.setLongitude(item.getLatLonPoint().getLongitude());
-                            focusPoi.setCity(item.getCityName());
-
-                            poisitionIsChosen=true;
-                            searchText.setText(item.toString());
-                        }
-                    });
-
-                    // 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-                    List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
-                    if (poiItems != null && poiItems.size() > 0) {
-//                        aMap.clear();// 清理之前的图标
-//                        PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
-//                        poiOverlay.removeFromMap();
-//                        poiOverlay.addToMap();
-//                        poiOverlay.zoomToSpan();
-                    } else if (suggestionCities != null
-                            && suggestionCities.size() > 0) {
-                        showSuggestCity(suggestionCities);
-                    } else {
-                        showToast("没有结果");
-                    }
-                }
-            } else {
-                showToast("没有结果");
-            }
-        } else {
-            showToast(rCode+"");
-        }
-    }
-
-    @Override
-    public void onPoiItemSearched(PoiItem poiItem, int i) {
-
-    }
-
-    /**
      *设置页面监听
      */
     private void setUpViewListener() {
@@ -614,19 +562,25 @@ public class MainActivity extends AppCompatActivity
         userButton.setOnClickListener(this);
         Button searButton = findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
-        Button nextButton = findViewById(R.id.next_button);
-        nextButton.setOnClickListener(this);
         Button searchIconButton =findViewById(R.id.search_icon);
         searchIconButton.setOnClickListener(this);
         Button changeToListButton =findViewById(R.id.change_to_list);
         changeToListButton.setOnClickListener(this);
         Button mapIconButton =findViewById(R.id.map_icon);
         mapIconButton.setOnClickListener(this);
+        FloatingActionButton scanButton=findViewById(R.id.scan);
+        scanButton.setOnClickListener(this);
+        FloatingActionButton addButton=findViewById(R.id.fab_addTask);
+        addButton.setOnClickListener(this);
 
-        searchText = findViewById(R.id.keyWord);
-        searchText.addTextChangedListener(this);// 添加文本输入框监听事件
-        editCity = findViewById(R.id.city);
-        editCity.setText(nowCity);  // 城市默认为当前定位的城市
+        //角色不同，可见控件不同
+        if(role==1){
+            addButton.setVisibility(View.VISIBLE);
+        }
+        else if (role==2){
+            addButton.setVisibility(View.VISIBLE);
+            scanButton.setVisibility(View.VISIBLE);
+        }
 
         startTimeView=findViewById(R.id.start_time);
         startTimeView.setOnClickListener(this);
@@ -689,51 +643,6 @@ public class MainActivity extends AppCompatActivity
         return super.onKeyDown(keyCode, event);
     }
 
-    /**
-     * 点击空白处隐藏Listview
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            // 隐藏listview布局
-
-            ListView view=poiListView;
-            LinearLayout layout=findViewById(R.id.search_input);
-
-            int[] location = {0, 0};
-            int[] location2={0,0};
-
-            // 获取当前view在屏幕中离四边的边距
-            view.getLocationInWindow(location);
-            layout.getLocationInWindow(location2);
-
-            int left = location[0], top = location2[1], right = view.getWidth(),
-                    bottom = location[1] + view.getHeight();
-
-            // 判断点击位置是否在view布局范围内
-            if (view.getVisibility()==View.VISIBLE){
-                if (ev.getRawX() < left || ev.getRawX() > right
-                        || ev.getY() < top || ev.getRawY() > bottom) {
-                    // 在这里执行你的操作，我的是判断当前布局显示的话，隐藏掉
-                    view.setVisibility(View.GONE);
-                }
-            }
-//            else  {
-//                if (ev.getY() > top || ev.getRawY() < (location2[1]+layout.getHeight())){
-//                    view.setVisibility(View.VISIBLE);
-//                    Log.i("show search result", "点击的是搜索框");
-//                }
-//                else {
-//                    view.setVisibility(View.GONE);
-//                    Log.i("show search result", "点击的是搜索框外的地图");
-//                }
-//            }
-//            poiListView.setVisibility(View.GONE);
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -744,10 +653,6 @@ public class MainActivity extends AppCompatActivity
             //点击搜索按钮
             case R.id.search_button:
                 searchButton();
-                break;
-            //点击下一页按钮
-            case R.id.next_button:
-                nextButton();
                 break;
             case R.id.search_icon:
                 searchIconButton();
@@ -764,9 +669,32 @@ public class MainActivity extends AppCompatActivity
             case R.id.end_time:
                 showEndTime();
                 break;
+            case R.id.scan:
+                scan();
+                break;
+            case R.id.fab_addTask:
+                addPatientInfo();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 点击扫描二维码的按钮
+     */
+    public void scan(){
+        Log.i("scan", "点击了扫描二维码按钮");
+        Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+        startActivityForResult(intent, 200);
+    }
+
+    /**
+     * 点击添加信息按钮
+     */
+    public void addPatientInfo(){
+        Intent intent=new Intent(MainActivity.this,PatientInActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -776,11 +704,11 @@ public class MainActivity extends AppCompatActivity
 
         if(!isLogin){
             Intent intent=new Intent(MainActivity.this, UserLoginActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,100);
         }
         else{
             Intent intent=new Intent(MainActivity.this, UserInfoActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,100);
         }
 
     }
@@ -801,21 +729,6 @@ public class MainActivity extends AppCompatActivity
 
         thread2=new Thread(runnable2);
         thread2.start();
-    }
-
-    /**
-     * 点击下一页按钮
-     */
-    public void nextButton() {
-        if (query != null && poiSearch != null && poiResult != null) {
-            if (poiResult.getPageCount() - 1 > currentPage) {
-                currentPage++;
-                query.setPageNum(currentPage);// 设置查后一页
-                poiSearch.searchPOIAsyn();
-            } else {
-                showToast("已经最后一页了");
-            }
-        }
     }
 
     /**
@@ -853,6 +766,7 @@ public class MainActivity extends AppCompatActivity
      */
     public void showInitMap(){
         aMap.clear();
+        mode=1-mode;
         Thread thread =new Thread(runnable);
         thread.start();
 
@@ -945,86 +859,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *
-     * @param s
-     * @param start
-     * @param count
-     * @param after
-     * 下面三个函数都是关于地点搜索框的
-     */
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        poiListView.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        String content=s.toString().trim();//获取自动提示输入框的内容
-        if ("".equals(content)) {
-            showToast("请输入关键词");
-//            aMap.clear();
-        }
-        else {
-            keyWord=content;
-            String city = editCity.getText().toString();
-            if (poisitionIsChosen) {
-//                aMap.clear();
-                LatLng latLng = new LatLng(focusPoi.getLatitude(), focusPoi.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions()
-                        //必须，设置经纬度
-                        .position(latLng);
-                aMap.addMarker(markerOptions);
-                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
-
-            }else{
-                doSearchQuery();
-            }
-            Log.i("城市", city);
-            Log.i("自动提示框", content);
-        }
-    }
-
-    /**
-     *在确认点击条目后，搜索栏会隐藏
-     */
-    @Override
-    public void afterTextChanged(Editable s) {
-        if(poisitionIsChosen){
-            poiListView.setVisibility(View.GONE);
-            poisitionIsChosen=false;
-//            Log.i("afterTextChanged", "true");
-        }
-        else{
-            poiListView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
-     *处理get请求
-     */
-    public static String getHttpResult(String urlStr){
-        try {
-            URL url=new URL(urlStr);
-            HttpURLConnection connect=(HttpURLConnection)url.openConnection();
-            InputStream input=connect.getInputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(input));
-            String line = null;
-            System.out.println(connect.getResponseCode());
-            StringBuffer sb = new StringBuffer();
-            while ((line = in.readLine()) != null) {
-                sb.append(line);
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return null;
-        }
-    }
-
-    /**
      *post当前位置，获得病例信息
      */
-    public static String getHomepage(double lat, double lon, String city){
+    public String getHomepage(double lat, double lon, String city){
 
         String h="http://175.24.72.189/index.php?r=normal/homepage";
         Map<String,Object> mmap=new LinkedHashMap<>();
@@ -1034,6 +871,7 @@ public class MainActivity extends AppCompatActivity
         Gson gson=new Gson();
         String json=gson.toJson(mmap);
         PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
         return postInfo.postMethod();
 
     }
@@ -1041,7 +879,7 @@ public class MainActivity extends AppCompatActivity
     /**
      *post search的地点，获得病例信息
      */
-    public static String getSearchPosition(PositionInfo positionInfo, String starttime, String endtime, int period, int protectionLevel, Boolean notice){
+    public String getSearchPosition(PositionInfo positionInfo, String starttime, String endtime, int period, int protectionLevel, Boolean notice){
 
         String h="http://175.24.72.189/index.php?r=normal/search";
         Map<String,Object> mmap=new LinkedHashMap<>();
@@ -1054,8 +892,65 @@ public class MainActivity extends AppCompatActivity
         Gson gson=new Gson();
         String json=gson.toJson(mmap);
         PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
         return postInfo.postMethod();
 
     }
 
+    /**
+     * post扫描得到的结果，让他变成患者
+     */
+    public String changeUserToPatient(String username){
+        String h="http://175.24.72.189/index.php?r=patient/recognize";
+        Map<String,Object> mmap=new LinkedHashMap<>();
+        mmap.put("userName", username);
+        Gson gson=new Gson();
+        String json=gson.toJson(mmap);
+        PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
+        return postInfo.postMethod();
+    }
+
+    @Override
+    public void fragToAct(PositionInfo code) {
+        focusPoi=code;
+        Log.i("f-a", "已收到Fragment的消息");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //子activity传回来的角色信息
+        if(requestCode==100 && resultCode==1){
+            role=data.getIntExtra("role",0);
+
+            FloatingActionButton scanButton=findViewById(R.id.scan);
+            scanButton.setOnClickListener(this);
+            FloatingActionButton addButton=findViewById(R.id.fab_addTask);
+            addButton.setOnClickListener(this);
+
+            //角色不同，可见控件不同
+            if(role==1){
+                addButton.setVisibility(View.VISIBLE);
+            }
+            else if (role==2){
+                addButton.setVisibility(View.VISIBLE);
+                scanButton.setVisibility(View.VISIBLE);
+            }
+            Log.i("role transform main",role+"");
+        }
+
+        // 扫描二维码/条码回传
+        if (requestCode == 200 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+//                result.setText("扫描结果为：" + content);
+                showToast(content);
+                scanUserName=content;
+                thread3=new Thread(runnable3);
+                thread3.start();
+            }
+        }
+
+    }
 }

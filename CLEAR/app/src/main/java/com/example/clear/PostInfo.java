@@ -1,5 +1,7 @@
 package com.example.clear;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -16,10 +18,12 @@ import java.util.Map;
 public class PostInfo {
     String url;
     String json;
+    String token;
 
     PostInfo(String url, String json){
         this.url=url;
         this.json=json;
+        token="";
     }
 
     String getUrl(){
@@ -38,10 +42,16 @@ public class PostInfo {
         this.json=json;
     }
 
+    String getToken(){
+        return this.token;
+    }
+
+    void setToken(String token){
+        this.token=token;
+    }
+
     public String postMethod(){
         try {
-            Log.i("json",this.json);
-
 //            String content = String.valueOf(object);
             URL url=new URL(this.url);
             HttpURLConnection connect=(HttpURLConnection)url.openConnection();
@@ -49,7 +59,9 @@ public class PostInfo {
             connect.setDoOutput(true);
             connect.setRequestMethod("POST");
             connect.setUseCaches(false);
-            final String tokenStr ="Bearer LZPxZSDMEk7s6fZFduU-ZBqf8sTDyT8x";
+
+//            final String tokenStr ="Bearer LZPxZSDMEk7s6fZFduU-ZBqf8sTDyT8x";
+            String tokenStr="Bearer "+token;
             connect.setRequestProperty("Authorization", tokenStr);
             connect.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
 
@@ -73,11 +85,11 @@ public class PostInfo {
             }
             else {
                 System.out.println(response);
-                return "not exsits";
+                return response+"";
             }
         } catch (Exception e) {
             Log.e("e:", String.valueOf(e));
-            return "internet errar";
+            return "internet error";
         }
     }
 
