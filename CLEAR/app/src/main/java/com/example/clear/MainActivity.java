@@ -26,6 +26,7 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
+import com.example.clear.danger.DangerCalculation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -72,6 +73,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -271,6 +273,7 @@ public class MainActivity extends AppCompatActivity
             String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, false);
             Log.i("post response",post);
             final List searchResult = new ArrayList<>();
+            List<SearchResultUnit> results = new ArrayList<>();
             aMap.clear();
 
 //            解析json
@@ -293,6 +296,8 @@ public class MainActivity extends AppCompatActivity
                     String searchAresult="地点："+p_pname+" 时间："+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
                     searchResult.add(searchAresult);
 
+                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime, p_period, p_plevel));
+
 //                    自定义marker
                     Bitmap virusBitmap;
                     virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
@@ -307,7 +312,11 @@ public class MainActivity extends AppCompatActivity
                     aMap.addMarker(markerOptions);
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
                 }
-            } catch (JSONException e) {
+
+                // 这里把DangerCalculation的构造函数参数补上，然后算出来的dangerRate应该就是算出来的结果了
+//                DangerCalculation dangerCal = new DangerCalculation();
+//                float dangerRate = dangerCal.Danger(results);
+            } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
             //展示在listview中
