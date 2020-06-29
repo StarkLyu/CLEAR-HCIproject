@@ -23,17 +23,10 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.TileOverlayOptions;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.core.SuggestionCity;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
 import com.example.clear.danger.DangerCalculation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -73,11 +66,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -197,15 +185,14 @@ public class MainActivity extends AppCompatActivity
                             Bitmap virusBitmap;
 //                    自定义marker
                             if (level<level_1){
-                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
+                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_1);
                             }
                             else if(level<level_2){
-                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_2);
                             }
                             else{
-                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
+                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_3);
                             }
-//                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
                             virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
                             BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
                             LatLng latLng = new LatLng(lat, lon);
@@ -306,7 +293,7 @@ public class MainActivity extends AppCompatActivity
 
 //                    自定义marker
                     Bitmap virusBitmap;
-                    virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                    virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_2);
                     virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
                     BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
                     LatLng latLng = new LatLng(lat, lon);
@@ -325,31 +312,73 @@ public class MainActivity extends AppCompatActivity
                 String danger_info;
                 float danger_l1=1;
                 float danger_l2=10;
-                float danger_l3;
                 if(dangerRate==0){
                     danger_info="您出行的时间很安全(*^▽^*)";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Confirm)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
                 }
                 else if (dangerRate<danger_l1){
                     danger_info="您这次的出行有一点点危险";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Info)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
                 }
                 else if (dangerRate<danger_l2){
                     danger_info="您有可能和感染人群有过接触，建议居家隔离";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Warning)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
                 }
                 else{
                     danger_info="您这次的出行太危险了，请马上去医院！";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Alert)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
                 }
 
-                CoordinatorLayout coordinator=findViewById(R.id.coordinator);
-                Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Info)
-                        .setActionTextColor(Color.WHITE)
-                        .setAction("知道了", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i("dangerRate", dangerRate+"");
-                            }
-                        });
-                snackbar.show();
-
+//                CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+//                Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Info)
+//                        .setActionTextColor(Color.WHITE)
+//                        .setAction("知道了", new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                Log.i("dangerRate", dangerRate+"");
+//                            }
+//                        });
+//                snackbar.show();
 
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
@@ -524,6 +553,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * 初始定位
+     */
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
         try {
@@ -795,11 +827,11 @@ public class MainActivity extends AppCompatActivity
         resultListView=findViewById(R.id.search_result_list);
         if (resultListView.getVisibility()==View.VISIBLE){
             resultListView.setVisibility(View.GONE);
-            Log.i("search result", "gone");
+//            Log.i("search result", "gone");
         }
         else{
             resultListView.setVisibility(View.VISIBLE);
-            Log.i("search result", "visible");
+//            Log.i("search result", "visible");
         }
     }
 
