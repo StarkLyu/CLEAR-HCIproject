@@ -2,6 +2,7 @@ package com.example.clear;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -23,14 +24,10 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.TileOverlayOptions;
 
-import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.core.SuggestionCity;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
 import com.example.clear.danger.DangerCalculation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
@@ -69,11 +66,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,6 +75,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements AMapLocationListener, View.OnClickListener, PoiSearchFragment.Mylistener
@@ -110,6 +103,7 @@ public class MainActivity extends AppCompatActivity
     private FragmentManager fragmentManager;  //Fragment 管理器
     private FragmentTransaction fragmentTransaction;  //Fragment 事务处理
     PoiSearchFragment fragment1;
+    Spinner mSpinner;
 
     String nowCity; //现在定位的城市
     double nowLat, nowLon;  //现在定位的经纬度
@@ -146,14 +140,6 @@ public class MainActivity extends AppCompatActivity
                 showLocation();
             }
         }
-
-//        FloatingActionButton fab=findViewById(R.id.fab_addTask);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
     }
 
     /**
@@ -179,75 +165,77 @@ public class MainActivity extends AppCompatActivity
             Log.i("post request", nowLat+" "+nowLon+" "+nowCity);
             Log.i("post response",post);
 
-//            解析json
-            try {
-                JSONArray jsonArray=new JSONArray(post);
-                int length=jsonArray.length();
+            if (!post.equals("401")){
+                //            解析json
+                try {
+                    JSONArray jsonArray=new JSONArray(post);
+                    int length=jsonArray.length();
 
-                LatLng[] latlngs = new LatLng[length];
+                    LatLng[] latlngs = new LatLng[length];
 
-                for (int i=0; i<length; i++){
-                    JSONObject obj=jsonArray.getJSONObject(i);
-                    double lat=obj.getDouble("latitude");
-                    double lon=obj.getDouble("longitude");
-                    double level=obj.getDouble("level");
+                    for (int i=0; i<length; i++){
+                        JSONObject obj=jsonArray.getJSONObject(i);
+                        double lat=obj.getDouble("latitude");
+                        double lon=obj.getDouble("longitude");
+                        double level=obj.getDouble("level");
 //                    Log.i("one position", i+" "+lat+" "+lon+" "+level);
 
-                    latlngs[i] = new LatLng(lat, lon);
+                        latlngs[i] = new LatLng(lat, lon);
 
 
-                    if(mode==1){
-                        Bitmap virusBitmap;
+                        if(mode==1){
+                            Bitmap virusBitmap;
 //                    自定义marker
-                        if (level<level_1){
-                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_1);
-                        }
-                        else if(level<level_2){
-                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
-                        }
-                        else{
-                            virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_3);
-                        }
-//                    Bitmap virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus);
-                        virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
-                        BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
-                        LatLng latLng = new LatLng(lat, lon);
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                //必须，设置经纬度
-                                .position(latLng);
-                        markerOptions.icon(virusIcon);
+                            if (level<level_1){
+                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_1);
+                            }
+                            else if(level<level_2){
+                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_2);
+                            }
+                            else{
+                                virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_3);
+                            }
+                            virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+                            BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+                            LatLng latLng = new LatLng(lat, lon);
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    //必须，设置经纬度
+                                    .position(latLng);
+                            markerOptions.icon(virusIcon);
 
-                        aMap.addMarker(markerOptions);
+                            aMap.addMarker(markerOptions);
+
+                        }
+
 
                     }
+                    if(mode==0){
+                        // 构建热力图 HeatmapTileProvider
+                        HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
+                        builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
+                        // Gradient 的设置可见参考手册
+                        // 构造热力图对象
+                        HeatmapTileProvider heatmapTileProvider = builder.build();
+                        // 初始化 TileOverlayOptions
+                        TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
+                        tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+                        // 向地图上添加 TileOverlayOptions 类对象
+                        aMap.addTileOverlay(tileOverlayOptions);
+                    }
 
-
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                if(mode==0){
-                    // 构建热力图 HeatmapTileProvider
-                    HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
-                    builder.data(Arrays.asList(latlngs)); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
-                    // Gradient 的设置可见参考手册
-                    // 构造热力图对象
-                    HeatmapTileProvider heatmapTileProvider = builder.build();
-                    // 初始化 TileOverlayOptions
-                    TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
-                    tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
-                    // 向地图上添加 TileOverlayOptions 类对象
-                    aMap.addTileOverlay(tileOverlayOptions);
-                }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                Message msg = new Message();
+                Bundle data = new Bundle();
+                data.putString("value","请求结果");
+
+                msg.setData(data);
+                handler.sendMessage(msg);
             }
-
-            Message msg = new Message();
-            Bundle data = new Bundle();
-            data.putString("value","请求结果");
-
-            msg.setData(data);
-            handler.sendMessage(msg);
         }
+
     };
 
     Handler handler2= new Handler(){
@@ -263,7 +251,7 @@ public class MainActivity extends AppCompatActivity
     Runnable runnable2=new Runnable(){
         @Override
         public void run() {
-            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, false);
+            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, true);
             Log.i("post response",post);
             final List searchResult = new ArrayList<>();
             List<SearchResultUnit> results = new ArrayList<>();
@@ -286,14 +274,28 @@ public class MainActivity extends AppCompatActivity
                     double lon=p_position.getDouble("longitude");
                     String city=p_position.getString("city");
                     PositionInfo p_info=new PositionInfo(p_poiid, p_pname, lat, lon, city);
-                    String searchAresult="地点："+p_pname+" 时间："+p_starttime+" "+p_endtime+" "+p_period+" "+p_plevel;
+                    p_period=p_period/60;
+                    String p_level_detail;
+                    switch (p_plevel){
+                        case 0:
+                            p_level_detail="无防护措施";
+                            break;
+                        case 1:
+                            p_level_detail="口罩";
+                            break;
+                        default:
+                            p_level_detail="防护服";
+                            break;
+                    }
+
+                    String searchAresult="地点："+p_pname+"\n时间："+p_starttime+" 到 "+p_endtime+"\n停留时长："+p_period+"分钟\n防护措施："+p_level_detail;
                     searchResult.add(searchAresult);
 
                     results.add(new SearchResultUnit(p_info, p_starttime, p_endtime, p_period, p_plevel));
 
 //                    自定义marker
                     Bitmap virusBitmap;
-                    virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2);
+                    virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_2);
                     virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
                     BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
                     LatLng latLng = new LatLng(lat, lon);
@@ -306,9 +308,70 @@ public class MainActivity extends AppCompatActivity
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
                 }
 
-                // 这里把DangerCalculation的构造函数参数补上，然后算出来的dangerRate应该就是算出来的结果了
-//                DangerCalculation dangerCal = new DangerCalculation();
-//                float dangerRate = dangerCal.Danger(results);
+//                 这里把DangerCalculation的构造函数参数补上，然后算出来的dangerRate应该就是算出来的结果了
+//                对不同危险等级进行信息提示
+                DangerCalculation dangerCal = new DangerCalculation(startTime, endTime, timePeriod, protectionLevel);
+                final float dangerRate = dangerCal.Danger(results);
+                String danger_info;
+                float danger_l1= (float) 0.3;
+                float danger_l2=1;
+                if(dangerRate==0){
+                    danger_info="您出行的时间很安全(*^▽^*)";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Confirm)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+                else if (dangerRate<danger_l1){
+                    danger_info="您这次的出行有一点点危险";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Info)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+                else if (dangerRate<danger_l2){
+                    danger_info="您有可能和感染人群有过接触，建议居家隔离";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Warning)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+                else{
+                    danger_info="您这次的出行太危险了，请马上去医院！";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Alert)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
@@ -482,6 +545,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * 初始定位
+     */
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
         try {
@@ -590,7 +656,7 @@ public class MainActivity extends AppCompatActivity
 //        protectLevelView=findViewById(R.id.protection_level);
 
         // 设置下拉框的监听
-        Spinner mSpinner = findViewById(R.id.protect_level_spinner);
+        mSpinner = findViewById(R.id.protect_level_spinner);
         ArrayList<String> list = new ArrayList<>();
 
         list.add("请选择您的防护措施");
@@ -753,11 +819,11 @@ public class MainActivity extends AppCompatActivity
         resultListView=findViewById(R.id.search_result_list);
         if (resultListView.getVisibility()==View.VISIBLE){
             resultListView.setVisibility(View.GONE);
-            Log.i("search result", "gone");
+//            Log.i("search result", "gone");
         }
         else{
             resultListView.setVisibility(View.VISIBLE);
-            Log.i("search result", "visible");
+//            Log.i("search result", "visible");
         }
     }
 
@@ -938,6 +1004,28 @@ public class MainActivity extends AppCompatActivity
                 scanButton.setVisibility(View.VISIBLE);
             }
             Log.i("role transform main",role+"");
+        }
+
+        // 点击历史搜索记录后回传
+        if(requestCode==100 && resultCode==2){
+            String history_position=data.getStringExtra("position");
+            Log.i("hisitory position", history_position);
+
+            fragment1=new PoiSearchFragment(nowCity);
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_poi_search,fragment1);
+            fragmentTransaction.commit();
+            //Activity传值，通过Bundle
+            Bundle bundle = new Bundle();
+            bundle.putString("MainActivity_history_position", history_position);
+            fragment1.setArguments(bundle);
+
+            startTimeView.setText(data.getStringExtra("starttime"));
+            endTimeView.setText(data.getStringExtra("endtime"));
+            timePeriodView.setText(data.getStringExtra("period"));
+            mSpinner.setSelection(data.getIntExtra("protection",0));
+
         }
 
         // 扫描二维码/条码回传

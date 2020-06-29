@@ -130,6 +130,15 @@ public class PoiSearchFragment extends Fragment implements TextWatcher, PoiSearc
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
         poiListView = view.findViewById(R.id.poi_list);
 
+        Bundle bundle = getArguments();
+        if(bundle!=null){
+            String result = bundle.getString("MainActivity_history_position");
+//            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+//            poisitionIsChosen=true;
+            searchText.setText(result);
+            poiListView.setVisibility(View.GONE);
+        }
+
         return view;
     }
 
@@ -146,7 +155,7 @@ public class PoiSearchFragment extends Fragment implements TextWatcher, PoiSearc
         poiSearch = new PoiSearch(view.getContext(), query);
         poiSearch.setOnPoiSearchListener(this);
         poiSearch.searchPOIAsyn();
-        Log.i("search", "ok2");
+//        Log.i("search", "ok2");
 
     }
 
