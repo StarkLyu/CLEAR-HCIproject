@@ -136,6 +136,7 @@ public class PoiSearchFragment extends Fragment implements TextWatcher, PoiSearc
 //            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
 //            poisitionIsChosen=true;
             searchText.setText(result);
+            poiListView.setVisibility(View.GONE);
         }
 
         return view;
