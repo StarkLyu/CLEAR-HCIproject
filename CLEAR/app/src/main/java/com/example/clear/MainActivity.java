@@ -75,6 +75,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements AMapLocationListener, View.OnClickListener, PoiSearchFragment.Mylistener
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity
     private FragmentManager fragmentManager;  //Fragment 管理器
     private FragmentTransaction fragmentTransaction;  //Fragment 事务处理
     PoiSearchFragment fragment1;
+    Spinner mSpinner;
 
     String nowCity; //现在定位的城市
     double nowLat, nowLon;  //现在定位的经纬度
@@ -249,7 +251,7 @@ public class MainActivity extends AppCompatActivity
     Runnable runnable2=new Runnable(){
         @Override
         public void run() {
-            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, false);
+            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, true);
             Log.i("post response",post);
             final List searchResult = new ArrayList<>();
             List<SearchResultUnit> results = new ArrayList<>();
@@ -307,11 +309,12 @@ public class MainActivity extends AppCompatActivity
                 }
 
 //                 这里把DangerCalculation的构造函数参数补上，然后算出来的dangerRate应该就是算出来的结果了
+//                对不同危险等级进行信息提示
                 DangerCalculation dangerCal = new DangerCalculation(startTime, endTime, timePeriod, protectionLevel);
                 final float dangerRate = dangerCal.Danger(results);
                 String danger_info;
-                float danger_l1=1;
-                float danger_l2=10;
+                float danger_l1= (float) 0.3;
+                float danger_l2=1;
                 if(dangerRate==0){
                     danger_info="您出行的时间很安全(*^▽^*)";
                     CoordinatorLayout coordinator=findViewById(R.id.coordinator);
@@ -368,17 +371,6 @@ public class MainActivity extends AppCompatActivity
                     snackbar.show();
 
                 }
-
-//                CoordinatorLayout coordinator=findViewById(R.id.coordinator);
-//                Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Info)
-//                        .setActionTextColor(Color.WHITE)
-//                        .setAction("知道了", new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                Log.i("dangerRate", dangerRate+"");
-//                            }
-//                        });
-//                snackbar.show();
 
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
@@ -664,7 +656,7 @@ public class MainActivity extends AppCompatActivity
 //        protectLevelView=findViewById(R.id.protection_level);
 
         // 设置下拉框的监听
-        Spinner mSpinner = findViewById(R.id.protect_level_spinner);
+        mSpinner = findViewById(R.id.protect_level_spinner);
         ArrayList<String> list = new ArrayList<>();
 
         list.add("请选择您的防护措施");
@@ -1012,6 +1004,28 @@ public class MainActivity extends AppCompatActivity
                 scanButton.setVisibility(View.VISIBLE);
             }
             Log.i("role transform main",role+"");
+        }
+
+        // 点击历史搜索记录后回传
+        if(requestCode==100 && resultCode==2){
+            String history_position=data.getStringExtra("position");
+            Log.i("hisitory position", history_position);
+
+            fragment1=new PoiSearchFragment(nowCity);
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_poi_search,fragment1);
+            fragmentTransaction.commit();
+            //Activity传值，通过Bundle
+            Bundle bundle = new Bundle();
+            bundle.putString("MainActivity_history_position", history_position);
+            fragment1.setArguments(bundle);
+
+            startTimeView.setText(data.getStringExtra("starttime"));
+            endTimeView.setText(data.getStringExtra("endtime"));
+            timePeriodView.setText(data.getStringExtra("period"));
+            mSpinner.setSelection(data.getIntExtra("protection",0));
+
         }
 
         // 扫描二维码/条码回传
