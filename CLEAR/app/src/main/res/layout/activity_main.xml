@@ -38,8 +38,8 @@
 
     <LinearLayout
         android:id="@+id/whole_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical">
         <LinearLayout
             android:id="@+id/search_input"
@@ -141,19 +141,6 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content" />
 
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:layout_width="200dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                style="@style/Widget.MaterialComponents.TextInputLayout.ExposedDropdownMenu">-->
-
-<!--            <AutoCompleteTextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:inputType="none"-->
-<!--                />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
         </LinearLayout>
 
         <LinearLayout
@@ -172,7 +159,6 @@
                 android:layout_weight="1"
                 android:text="开始搜索" />
         </LinearLayout>
-
 
     </LinearLayout>
 
@@ -193,7 +179,7 @@
         android:background="@color/icons"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="70dp"
         android:layout_marginEnd="16dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -205,7 +191,14 @@
         android:background="@color/icons"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="150dp"
         android:layout_marginEnd="16dp"/>
+
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/bottom_navigation"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        app:menu="@menu/bottom_navigation_menu" />-->
 
 </RelativeLayout>

@@ -22,6 +22,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.TileOverlayOptions;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -132,14 +133,6 @@ public class MainActivity extends AppCompatActivity
                 showLocation();
             }
         }
-
-//        FloatingActionButton fab=findViewById(R.id.fab_addTask);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
     }
 
     /**
