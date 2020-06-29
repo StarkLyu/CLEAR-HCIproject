@@ -8,6 +8,8 @@ import android.util.Log;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.PushAgent;
+import com.umeng.message.UmengNotificationClickHandler;
+import com.umeng.message.entity.UMessage;
 
 import static com.ta.utdid2.b.a.j.TAG;
 
@@ -41,6 +43,17 @@ public class ClearApplication extends Application {
                 Log.e(TAG,"注册失败：-------->  " + "s:" + s + ",s1:" + s1);
             }
         });
+
+        UmengNotificationClickHandler umengNotificationClickHandler = new UmengNotificationClickHandler() {
+
+            @Override
+            public void launchApp(Context context, UMessage uMessage) {
+                super.launchApp(context, uMessage);
+                String searchID = uMessage.extra.get("searchID");
+                // 根据searchID获取搜索信息并展示
+            }
+        };
+        mPushAgent.setNotificationClickHandler(umengNotificationClickHandler);
         mContext = getApplicationContext();
     }
 
