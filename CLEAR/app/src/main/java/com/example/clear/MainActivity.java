@@ -28,6 +28,7 @@ import com.example.clear.danger.DangerCalculation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
@@ -54,6 +55,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity
     private FragmentTransaction fragmentTransaction;  //Fragment 事务处理
     PoiSearchFragment fragment1;
     Spinner mSpinner;
+    SwitchMaterial noticeSwitch;
 
     String nowCity; //现在定位的城市
     double nowLat, nowLon;  //现在定位的经纬度
@@ -254,7 +257,7 @@ public class MainActivity extends AppCompatActivity
     Runnable runnable2=new Runnable(){
         @Override
         public void run() {
-            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, true);
+            String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, sendNotice);
             Log.i("post response : getSearchPosition",post);
             final List searchResult = new ArrayList<>();
             List<SearchResultUnit> results = new ArrayList<>();
@@ -294,7 +297,7 @@ public class MainActivity extends AppCompatActivity
                     String searchAresult="地点："+p_pname+"\n时间："+p_starttime+" 到 "+p_endtime+"\n停留时长："+p_period+"分钟\n防护措施："+p_level_detail;
                     searchResult.add(searchAresult);
 
-                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,0, p_period, p_plevel));
+                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,0,0, p_period, p_plevel));
 
 //                    自定义marker
                     Bitmap virusBitmap;
@@ -475,12 +478,13 @@ public class MainActivity extends AppCompatActivity
 
 //            解析json
             try {
-                if(post.startsWith("\ufeff")){
-                    post = post.substring(1);}
-
 
                 JSONObject jsonObject=new JSONObject(post);
                 JSONObject search_info=jsonObject.getJSONObject("searchInfo");
+//                int notice_tmp=search_info.getInt("sendNotice");
+//                if(notice_tmp==1) sendNotice=true;
+//                else sendNotice=false;
+//                noticeSwitch.setChecked(sendNotice);
 
                 JSONArray search_results=jsonObject.getJSONArray("searchResult");
                 int length=search_results.length();
@@ -514,7 +518,7 @@ public class MainActivity extends AppCompatActivity
                     String searchAresult="地点："+p_pname+"\n时间："+p_starttime+" 到 "+p_endtime+"\n停留时长："+p_period+"分钟\n防护措施："+p_level_detail;
                     searchResult.add(searchAresult);
 
-                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,0, p_period, p_plevel));
+                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,0,0, p_period, p_plevel));
 
 //                    自定义marker
                     Bitmap virusBitmap;
@@ -811,6 +815,14 @@ public class MainActivity extends AppCompatActivity
         scanButton.setOnClickListener(this);
         FloatingActionButton addButton=findViewById(R.id.fab_addTask);
         addButton.setOnClickListener(this);
+        noticeSwitch=findViewById(R.id.notice_switch);
+        noticeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                sendNotice= isChecked;
+//                Log.i("switch", isChecked+"");
+            }
+        });
 
         //角色不同，可见控件不同
         if(role==1){
@@ -1217,7 +1229,7 @@ public class MainActivity extends AppCompatActivity
 
             startTimeView.setText(startTime);
             endTimeView.setText(endTime);
-            timePeriodView.setText(timePeriod+"");
+            timePeriodView.setText(data.getIntExtra("period",0)+"");
             mSpinner.setSelection(protectionLevel);
 
             thread4=new Thread(runnable4);

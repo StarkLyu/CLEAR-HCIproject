@@ -120,7 +120,7 @@
             android:background="#ffffff">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="150dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content">
 
                 <EditText
@@ -137,7 +137,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="220dp"
+                android:layout_width="150dp"
                 android:layout_height="match_parent">
 
                 <TextView
@@ -152,6 +152,12 @@
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/notice_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:checked="false"
+                android:text="通知"/>
 
         </LinearLayout>
 
@@ -217,7 +223,6 @@
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </RelativeLayout>

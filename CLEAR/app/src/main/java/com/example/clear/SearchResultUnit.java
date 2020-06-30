@@ -11,15 +11,17 @@ public class SearchResultUnit {
     public Date starttime;
     public Date endtime;
     public int recordId;
+    public int sendNotice;
     public int length;
     public int period;
     public int protectionLevel;
 
-    public SearchResultUnit(PositionInfo pos, String start, String end, int record, int per, int protect) throws ParseException {
+    public SearchResultUnit(PositionInfo pos, String start, String end, int record, int notice, int per, int protect) throws ParseException {
         position = pos;
         starttimeStr = start;
         endtimeStr = end;
         recordId=record;
+        sendNotice=notice;
         period = per;
         protectionLevel = protect;
 

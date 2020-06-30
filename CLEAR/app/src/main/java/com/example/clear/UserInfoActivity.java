@@ -1,9 +1,11 @@
 package com.example.clear;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -35,6 +37,7 @@ import com.amap.api.maps.model.Text;
 import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.services.core.PoiItem;
 import com.example.clear.danger.DangerCalculation;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
@@ -46,6 +49,8 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +61,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private Button btn_relogin, btn_return;
     public TextView roleText;
     private ImageView img;
-    int role;
+    int role, recordID;
+    Boolean sendNotice;
     String authToken;
 
 
@@ -155,6 +161,21 @@ public class UserInfoActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 更改对应搜索记录的通知状态
+     */
+    public String changeSearchRecordNotice(int recordID, Boolean notice){
+        String h="http://175.24.72.189/index.php?r=normal/notice";
+        Map<String,Object> mmap=new LinkedHashMap<>();
+        mmap.put("recordID", recordID);
+        mmap.put("notice", notice);
+        Gson gson=new Gson();
+        String json=gson.toJson(mmap);
+        PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
+        return postInfo.postMethod();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -204,6 +225,8 @@ public class UserInfoActivity extends AppCompatActivity {
                 //            解析json
                 final List searchHistory = new ArrayList<>();
                 final List<SearchResultUnit> results = new ArrayList<>();
+                final ArrayList <Map<String,Object>> history_results = new ArrayList<>();
+
                 try {
                     JSONArray jsonArray = new JSONArray(post);
                     int length = jsonArray.length();
@@ -214,6 +237,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         int p_period = obj.getInt("timePeriod");
                         int p_plevel = obj.getInt("protectionLevel");
                         int search_record_id=obj.getInt("sr_id");
+                        int send_notice=obj.getInt("sendNotice");
                         String p_poiid=obj.getString("positionID");
                         JSONObject p_position = obj.getJSONObject("position");
                         String p_pname = p_position.getString("positionName");
@@ -235,61 +259,110 @@ public class UserInfoActivity extends AppCompatActivity {
                                 p_level_detail = "防护服";
                                 break;
                         }
+                        String notice_status="";
+                        if (send_notice==0){
+                            notice_status="未通知";
+                        }
+                        else{
+                            notice_status="已通知";
+                        }
 
-                        results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,search_record_id, p_period, p_plevel));
-                        String searchAresult = "地点：" + p_pname + "\n时间：" + p_starttime + " 到 " + p_endtime + "\n停留时长：" + p_period + "分钟\n防护措施：" + p_level_detail;
+                        results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,search_record_id,send_notice, p_period, p_plevel));
+                        String searchAresult = "地点：" + p_pname +
+                                "\n时间：" + p_starttime + " 到 " + p_endtime +
+                                "\n停留时长：" + p_period +
+                                "分钟\n防护措施：" + p_level_detail+
+                                "\n是否通知："+notice_status;
                         searchHistory.add(searchAresult);
 
+//                        Map<String, Object> map;
+//                        map = new HashMap<>();
+//                        map.put("name", searchAresult);
+//                        if (send_notice==1){
+//                            map.put("button", "取消通知");
+//                        }
+//                        else{
+//                            map.put("button", "通知");
+//                        }
+//
+//                        history_results.add(map);
                     }
 
                 } catch (JSONException | ParseException e) {
                     e.printStackTrace();
                 }
+
                 //展示在listview中
                 UserInfoActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>
-                                (UserInfoActivity.this, android.R.layout.simple_list_item_1, searchHistory);
+                        Collections.reverse(history_results);
+                        Collections.reverse(searchHistory);
                         ListView resultListView;
                         resultListView = findViewById(R.id.history_search_result_list);
+
+//                        SearchHistoryItemAdapter adapter = new SearchHistoryItemAdapter(UserInfoActivity.this,history_results,R.layout.item_search_history,
+//                                new String[]{"name", "button"},
+//                                new int[]{R.id.search_history, R.id.notice_switch});
+//                        resultListView.setAdapter(adapter);
+//                        resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//
+//                            @Override
+//                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                                Log.i("我点击了item",i+"");
+//                            }
+//                        });
+
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>
+                                (UserInfoActivity.this, android.R.layout.simple_list_item_1, searchHistory);
                         resultListView.setAdapter(adapter);
 
                         resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                SearchResultUnit item = results.get(i);
+                                final SearchResultUnit item = results.get(searchHistory.size()-1-i);
 
-                                Log.i("choose position",
-                                        item.ResultString());
+                                final String[] items = { "返回搜索状态","更改通知状态"};
+                                AlertDialog.Builder listDialog =
+                                        new AlertDialog.Builder(UserInfoActivity.this);
+                                listDialog.setTitle("选择你的操作");
+                                listDialog.setItems(items, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
 
-                                Intent intent = new Intent();
-                                intent.putExtra("record id", item.recordId);
-                                intent.putExtra("position", item.position.positionName);
-                                intent.putExtra("starttime",item.starttimeStr);
-                                intent.putExtra("endtime",item.endtimeStr);
-                                intent.putExtra("period",item.period);
-                                intent.putExtra("protection",item.protectionLevel);
-                                setResult(2, intent);
-                                finish();
+                                        Log.i("您点击了", items[which]);
+                                        recordID=item.recordId;
+                                        if(item.sendNotice==1){
+                                            sendNotice=false;
+                                        }
+                                        else{
+                                            sendNotice=true;
+                                        }
 
-//                                // 存储搜索的地点信息
-//                                focusPoi=new PositionInfo();
-//                                focusPoi.setPositionID(item.getPoiId());
-//                                focusPoi.setPositionName(item.getTitle());
-//                                focusPoi.setLatitude(item.getLatLonPoint().getLatitude());
-//                                focusPoi.setLongitude(item.getLatLonPoint().getLongitude());
-//                                focusPoi.setCity(item.getCityName());
-//
-//                                poisitionIsChosen=true;
-//                                searchText.setText(item.toString());
-//
-//                                String code="fragment向activity传值成功";
-//                                listener.fragToAct(focusPoi);
+                                        Log.i("post information", recordID+" "+authToken);
+
+                                        if (which==0){
+                                            Intent intent = new Intent();
+                                            intent.putExtra("record id", item.recordId);
+                                            intent.putExtra("position", item.position.positionName);
+                                            intent.putExtra("starttime",item.starttimeStr);
+                                            intent.putExtra("endtime",item.endtimeStr);
+                                            intent.putExtra("period",item.period);
+                                            intent.putExtra("protection",item.protectionLevel);
+                                            setResult(2, intent);
+                                            finish();
+                                        }
+                                        else{
+                                            Thread thread2;
+                                            thread2=new Thread(runnable2);
+                                            thread2.start();
+                                        }
+                                    }
+                                });
+                                listDialog.show();
                             }
                         });
                     }
                 });
-
 
                 Message msg = new Message();
                 Bundle data = new Bundle();
@@ -300,5 +373,48 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         }
 
+    };
+
+    Handler handler2= new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+
+        }
+    };
+
+    /**
+     * 更改用户通知状态
+     */
+    Runnable runnable2=new Runnable(){
+        @Override
+        public void run() {
+            String post=changeSearchRecordNotice(recordID, sendNotice);
+            Log.i("post response : changeSearchRecordNotice",post);
+
+            switch (post){
+                case "200":
+                    break;
+                case "400":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"搜索记录不正确",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                    break;
+                default:
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"更改成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
+                    break;
+            }
+
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("value","请求结果");
+
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
     };
 }
