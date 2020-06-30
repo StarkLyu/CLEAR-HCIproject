@@ -218,6 +218,64 @@
 <!--        android:layout_height="wrap_content"-->
 <!--        android:layout_alignParentBottom="true"-->
 <!--        app:menu="@menu/bottom_navigation_menu" />-->
+    <FrameLayout
+        android:id="@+id/fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_weight="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="5dp"
+        android:background="#CCCCCC" />
+
+<!--    <RadioGroup-->
+<!--        android:id="@+id/rg_group"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/rb_map"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:button="@null"-->
+<!--            android:drawableTop="@drawable/avatar"-->
+<!--            android:gravity="center" />-->
+
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/rb_car"-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:button="@null"-->
+<!--            android:drawableTop="@drawable/searchicon2"-->
+<!--            android:gravity="center" />-->
+
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/rb_find"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:button="@null"-->
+<!--            android:drawableTop="@drawable/mapicon"-->
+<!--            android:gravity="center" />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/rb_me"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:button="@null"-->
+<!--            android:checked="true"-->
+<!--            android:drawableTop="@drawable/add"-->
+<!--            android:gravity="center" />-->
+<!--    </RadioGroup>-->
+
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinator"

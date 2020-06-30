@@ -421,27 +421,28 @@ public class MainActivity extends AppCompatActivity
             Log.i("post response : changeUserToPatient",post);
 
             switch (post){
-                case "200":
+                case "Recognize success":
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"授权患者成功",Toast.LENGTH_SHORT).show();
                     Looper.loop();
                     break;
-                case "400":
+                case "Patient username required":
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"未输入患者的用户名",Toast.LENGTH_SHORT).show();
                     Looper.loop();
                     break;
                 case "401":
-                    Looper.prepare();
-                    Toast.makeText(getApplicationContext(),"未登录或不是医生",Toast.LENGTH_SHORT).show();
-                    Looper.loop();
+
                     break;
-                case "403":
+                case "User not found":
                     Looper.prepare();
                     Toast.makeText(getApplicationContext(),"患者不存在",Toast.LENGTH_SHORT).show();
                     Looper.loop();
                     break;
                 default:
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"未登录或不是医生",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     break;
             }
 

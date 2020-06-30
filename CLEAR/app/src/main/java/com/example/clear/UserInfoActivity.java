@@ -395,7 +395,10 @@ public class UserInfoActivity extends AppCompatActivity {
             Log.i("post response : changeSearchRecordNotice",post);
 
             switch (post){
-                case "200":
+                case "success":
+                    Looper.prepare();
+                    Toast.makeText(getApplicationContext(),"更改成功",Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     break;
                 case "400":
                     Looper.prepare();
@@ -403,9 +406,7 @@ public class UserInfoActivity extends AppCompatActivity {
                     Looper.loop();
                     break;
                 default:
-                    Looper.prepare();
-                    Toast.makeText(getApplicationContext(),"更改成功",Toast.LENGTH_SHORT).show();
-                    Looper.loop();
+
                     break;
             }
 
