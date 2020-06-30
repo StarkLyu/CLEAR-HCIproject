@@ -10,10 +10,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!--声明后台定位权限-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 声明后台定位权限 -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
 
     <application
         android:allowBackup="true"
@@ -21,16 +19,26 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
-        <meta-data android:name="com.amap.api.v2.apikey" android:value="df51d7df6d29615631f9e973841120c0"/>
-        <service
-            android:name="com.amap.api.location.APSService">
-        </service>
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".EncourageActivity"></activity>
         <activity
-            android:name=".PatientActivity"
-            android:label="@string/title_activity_patient"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:name=".PatientInputActivity"
+            android:label="@string/title_activity_patient_input"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="df51d7df6d29615631f9e973841120c0" />
+
+        <service android:name="com.amap.api.location.APSService" />
+
+        <activity android:name=".PatientInActivity" />
+        <activity android:name=".PatientOftenActivity" />
+        <activity android:name=".PatientPast1Activity" />
+        <activity android:name=".PatientPast2Activity" />
+        <activity android:name=".PatientPast3Activity" />
+        <activity android:name=".PatientPast4Activity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +46,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

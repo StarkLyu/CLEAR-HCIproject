@@ -6,19 +6,32 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context=".PatientOftenActivity">
-    <TextView
-        android:id="@+id/text_idInfo"
+    <RelativeLayout
+        android:id="@+id/rl_info"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:gravity="center"
-        android:text="经常访问地点信息"
-        android:background="@color/primary"
-        android:textSize="@dimen/text_title" />
+        android:layout_height="80dp">
+        <Button
+            android:id="@+id/btn_back_1"
+            android:background="@drawable/back"
+            android:gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+        <TextView
+            android:id="@+id/text_idInfo"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:text="经常访问地点信息"
+            android:background="@color/primary"
+            android:textSize="@dimen/text_title" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_below="@+id/text_idInfo"
+        android:layout_below="@+id/rl_info"
         android:layout_margin="10dp"
         android:background="@drawable/shape_white_frame"
         android:id="@+id/rl_name">
@@ -38,15 +51,22 @@
             android:layout_margin="5dp"
             android:layout_toRightOf="@+id/tv_name"
             android:background="@color/divider" />
-        <EditText
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/ed_name"
+            android:id="@+id/ed_search"
+            android:hint="请输入地点"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/tv_name"
             android:textColor="@color/primary_text" />
     </RelativeLayout>
-
+    <ListView
+        android:id="@+id/search_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_name"
+        android:layout_marginLeft="20dp"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"

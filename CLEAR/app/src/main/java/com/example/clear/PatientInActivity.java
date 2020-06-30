@@ -32,6 +32,15 @@ public class PatientInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button btn_back=findViewById(R.id.btn_back_0);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(PatientInActivity.this,MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }
