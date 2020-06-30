@@ -111,10 +111,10 @@ public class MainActivity extends AppCompatActivity
     //搜索周围病例的request
     PositionInfo focusPoi;  //查找的位置
     String startTime, endTime, authToken, scanUserName;
-    int timePeriod, protectionLevel, role=0;  //role代表用户角色
+    int timePeriod, protectionLevel, role=0, recordID;  //role代表用户角色, recordID代表返回的搜索记录的id
     boolean sendNotice, isLogin, isLocated=false;
 
-    Thread thread1, thread2, thread3;
+    Thread thread1, thread2, thread3, thread4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,8 +162,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void run() {
             String post=getHomepage(nowLat,nowLon,nowCity);
-            Log.i("post request", nowLat+" "+nowLon+" "+nowCity);
-            Log.i("post response",post);
+//            Log.i("post request", nowLat+" "+nowLon+" "+nowCity);
+            Log.i("post response : getHomepage",post);
 
             if (!post.equals("401")){
                 //            解析json
@@ -248,11 +248,14 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    /**
+     * 处理搜索记录的请求
+     */
     Runnable runnable2=new Runnable(){
         @Override
         public void run() {
             String post=getSearchPosition(focusPoi, startTime, endTime, timePeriod, protectionLevel, true);
-            Log.i("post response",post);
+            Log.i("post response : getSearchPosition",post);
             final List searchResult = new ArrayList<>();
             List<SearchResultUnit> results = new ArrayList<>();
             aMap.clear();
@@ -291,7 +294,7 @@ public class MainActivity extends AppCompatActivity
                     String searchAresult="地点："+p_pname+"\n时间："+p_starttime+" 到 "+p_endtime+"\n停留时长："+p_period+"分钟\n防护措施："+p_level_detail;
                     searchResult.add(searchAresult);
 
-                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime, p_period, p_plevel));
+                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,0, p_period, p_plevel));
 
 //                    自定义marker
                     Bitmap virusBitmap;
@@ -405,11 +408,14 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    /**
+     * 处理扫描二维码的请求
+     */
     Runnable runnable3=new Runnable(){
         @Override
         public void run() {
             String post=changeUserToPatient(scanUserName);
-            Log.i("post response",post);
+            Log.i("post response : changeUserToPatient",post);
 
             switch (post){
                 case "200":
@@ -436,6 +442,173 @@ public class MainActivity extends AppCompatActivity
                     break;
             }
 
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("value","请求结果");
+
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
+    };
+
+    Handler handler4= new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+
+        }
+    };
+
+    /**
+     * 处理根据搜索记录id返回搜索记录的请求
+     */
+    Runnable runnable4=new Runnable(){
+        @Override
+        public void run() {
+            String post=getUserSearchRecord(recordID);
+            Log.i("post response : getUserSearchRecord",post);
+            final List searchResult = new ArrayList<>();
+            List<SearchResultUnit> results = new ArrayList<>();
+            aMap.clear();
+
+//            解析json
+            try {
+                if(post.startsWith("\ufeff")){
+                    post = post.substring(1);}
+
+
+                JSONObject jsonObject=new JSONObject(post);
+                JSONObject search_info=jsonObject.getJSONObject("searchInfo");
+
+                JSONArray search_results=jsonObject.getJSONArray("searchResult");
+                int length=search_results.length();
+                for (int i=0; i<length; i++){
+                    JSONObject obj=search_results.getJSONObject(i);
+                    String p_starttime=obj.getString("startTime");
+                    String p_endtime=obj.getString("endTime");
+                    int p_period=obj.getInt("timePeriod");
+                    int p_plevel=obj.getInt("protectionLevel");
+                    String p_poiid=obj.getString("positionID");
+                    JSONObject p_position=obj.getJSONObject("position");
+                    String p_pname=p_position.getString("positionName");
+                    double lat=p_position.getDouble("latitude");
+                    double lon=p_position.getDouble("longitude");
+                    String city=p_position.getString("city");
+                    PositionInfo p_info=new PositionInfo(p_poiid, p_pname, lat, lon, city);
+                    p_period=p_period/60;
+                    String p_level_detail;
+                    switch (p_plevel){
+                        case 0:
+                            p_level_detail="无防护措施";
+                            break;
+                        case 1:
+                            p_level_detail="口罩";
+                            break;
+                        default:
+                            p_level_detail="防护服";
+                            break;
+                    }
+
+                    String searchAresult="地点："+p_pname+"\n时间："+p_starttime+" 到 "+p_endtime+"\n停留时长："+p_period+"分钟\n防护措施："+p_level_detail;
+                    searchResult.add(searchAresult);
+
+                    results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,0, p_period, p_plevel));
+
+//                    自定义marker
+                    Bitmap virusBitmap;
+                    virusBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.virus_2_2);
+                    virusBitmap= Bitmap.createScaledBitmap(virusBitmap, 100, 100, false);
+                    BitmapDescriptor virusIcon = BitmapDescriptorFactory.fromBitmap(virusBitmap);
+                    LatLng latLng = new LatLng(lat, lon);
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            //必须，设置经纬度
+                            .position(latLng);
+                    markerOptions.icon(virusIcon);
+
+                    aMap.addMarker(markerOptions);
+                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
+                }
+
+//                 这里把DangerCalculation的构造函数参数补上，然后算出来的dangerRate应该就是算出来的结果了
+//                对不同危险等级进行信息提示
+                DangerCalculation dangerCal = new DangerCalculation(startTime, endTime, timePeriod, protectionLevel);
+                final float dangerRate = dangerCal.Danger(results);
+                String danger_info;
+                float danger_l1= (float) 0.3;
+                float danger_l2=1;
+                if(dangerRate==0){
+                    danger_info="您出行的时间很安全(*^▽^*)";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Confirm)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+                else if (dangerRate<danger_l1){
+                    danger_info="您这次的出行有一点点危险";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Info)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+                else if (dangerRate<danger_l2){
+                    danger_info="您有可能和感染人群有过接触，建议居家隔离";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Warning)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+                else{
+                    danger_info="您这次的出行太危险了，请马上去医院！";
+                    CoordinatorLayout coordinator=findViewById(R.id.coordinator);
+                    Snackbar snackbar=SnackbarUtil.IndefiniteSnackbar(coordinator,danger_info,SnackbarUtil.Alert)
+                            .setActionTextColor(Color.WHITE)
+                            .setAction("知道了", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.i("dangerRate", dangerRate+"");
+                                }
+                            });
+                    snackbar.show();
+
+                }
+
+            } catch (JSONException | ParseException e) {
+                e.printStackTrace();
+            }
+            //展示在listview中
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>
+                            (MainActivity.this, android.R.layout.simple_list_item_1, searchResult);
+                    ListView resultListView;
+                    resultListView=findViewById(R.id.search_result_list);
+                    resultListView.setAdapter(adapter);
+                    resultListView.setVisibility(View.GONE);
+                }
+            });
             Message msg = new Message();
             Bundle data = new Bundle();
             data.putString("value","请求结果");
@@ -659,18 +832,18 @@ public class MainActivity extends AppCompatActivity
         mSpinner = findViewById(R.id.protect_level_spinner);
         ArrayList<String> list = new ArrayList<>();
 
-        list.add("请选择您的防护措施");
+//        list.add("请选择您的防护措施");
+        list.add("无防护措施");
+        list.add("口罩");
+        list.add("防护服");
         //为下拉列表定义一个适配器
         final ArrayAdapter<String> ad = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
         //设置下拉菜单样式。
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //添加数据
         mSpinner.setAdapter(ad);
-        list.add("无防护措施");
-        list.add("口罩");
-        list.add("防护服");
         mSpinner.setSelection(0,true);//选中默认值
-        list.remove(0);
+//        list.remove(0);
         //点击响应事件
         mSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -977,6 +1150,21 @@ public class MainActivity extends AppCompatActivity
         return postInfo.postMethod();
     }
 
+    /**
+     * post record id，返回该用户该id的搜索记录
+     */
+    public String getUserSearchRecord(int recordId){
+        String h="http://175.24.72.189/index.php?r=normal/record";
+        Map<String,Object> mmap=new LinkedHashMap<>();
+        mmap.put("recordID", recordId);
+        Gson gson=new Gson();
+        String json=gson.toJson(mmap);
+        PostInfo postInfo=new PostInfo(h,json);
+        postInfo.setToken(authToken);
+        Log.i("get user search record : authToken",authToken);
+        return postInfo.postMethod();
+    }
+
     @Override
     public void fragToAct(PositionInfo code) {
         focusPoi=code;
@@ -1010,6 +1198,7 @@ public class MainActivity extends AppCompatActivity
         if(requestCode==100 && resultCode==2){
             String history_position=data.getStringExtra("position");
             Log.i("hisitory position", history_position);
+            recordID=data.getIntExtra("record id",0);
 
             fragment1=new PoiSearchFragment(nowCity);
             fragmentManager = getSupportFragmentManager();
@@ -1021,11 +1210,18 @@ public class MainActivity extends AppCompatActivity
             bundle.putString("MainActivity_history_position", history_position);
             fragment1.setArguments(bundle);
 
-            startTimeView.setText(data.getStringExtra("starttime"));
-            endTimeView.setText(data.getStringExtra("endtime"));
-            timePeriodView.setText(data.getStringExtra("period"));
-            mSpinner.setSelection(data.getIntExtra("protection",0));
+            startTime=data.getStringExtra("starttime");
+            endTime=data.getStringExtra("endtime");
+            timePeriod=data.getIntExtra("period",0)*60;
+            protectionLevel=data.getIntExtra("protection",0);
 
+            startTimeView.setText(startTime);
+            endTimeView.setText(endTime);
+            timePeriodView.setText(timePeriod+"");
+            mSpinner.setSelection(protectionLevel);
+
+            thread4=new Thread(runnable4);
+            thread4.start();
         }
 
         // 扫描二维码/条码回传

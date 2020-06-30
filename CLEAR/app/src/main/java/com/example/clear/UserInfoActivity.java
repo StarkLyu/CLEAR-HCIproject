@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -212,6 +213,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         String p_endtime = obj.getString("endTime");
                         int p_period = obj.getInt("timePeriod");
                         int p_plevel = obj.getInt("protectionLevel");
+                        int search_record_id=obj.getInt("sr_id");
                         String p_poiid=obj.getString("positionID");
                         JSONObject p_position = obj.getJSONObject("position");
                         String p_pname = p_position.getString("positionName");
@@ -234,7 +236,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                 break;
                         }
 
-                        results.add(new SearchResultUnit(p_info, p_starttime, p_endtime, p_period, p_plevel));
+                        results.add(new SearchResultUnit(p_info, p_starttime, p_endtime,search_record_id, p_period, p_plevel));
                         String searchAresult = "地点：" + p_pname + "\n时间：" + p_starttime + " 到 " + p_endtime + "\n停留时长：" + p_period + "分钟\n防护措施：" + p_level_detail;
                         searchHistory.add(searchAresult);
 
@@ -261,12 +263,11 @@ public class UserInfoActivity extends AppCompatActivity {
                                         item.ResultString());
 
                                 Intent intent = new Intent();
-//                                intent.putExtra("search_history", item);
-//                    intent.putExtra("password",psw);
+                                intent.putExtra("record id", item.recordId);
                                 intent.putExtra("position", item.position.positionName);
                                 intent.putExtra("starttime",item.starttimeStr);
                                 intent.putExtra("endtime",item.endtimeStr);
-                                intent.putExtra("period",item.period+"");
+                                intent.putExtra("period",item.period);
                                 intent.putExtra("protection",item.protectionLevel);
                                 setResult(2, intent);
                                 finish();

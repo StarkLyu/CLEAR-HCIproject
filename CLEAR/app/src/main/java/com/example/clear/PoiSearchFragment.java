@@ -278,10 +278,10 @@ public class PoiSearchFragment extends Fragment implements TextWatcher, PoiSearc
                         .position(latLng);
 //                aMap.addMarker(markerOptions);
 //                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
-                Log.i("search", "no");
+//                Log.i("search", "no");
 
             }else{
-                Log.i("search", "ok");
+//                Log.i("search", "ok");
                 doSearchQuery();
 
             }
