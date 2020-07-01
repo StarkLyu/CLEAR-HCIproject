@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
@@ -39,9 +38,18 @@
             android:name=".PatientInActivity"
             android:label="@string/title_activity_patient"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".MainActivity"
-            android:launchMode="standard">
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="df51d7df6d29615631f9e973841120c0" />
+
+        <service android:name="com.amap.api.location.APSService" />
+        <activity android:name=".PatientOftenActivity" />
+        <activity android:name=".PatientPast1Activity" />
+        <activity android:name=".PatientPast2Activity" />
+        <activity android:name=".PatientPast3Activity" />
+        <activity android:name=".PatientPast4Activity" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

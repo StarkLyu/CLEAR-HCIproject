@@ -23,56 +23,43 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:gravity="center"
-            android:text="信息录入"
             android:background="@color/primary"
             android:textSize="@dimen/text_title" />
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/btn_voice"
-            android:background="@drawable/voice"
-            android:layout_marginLeft="350dp"
-            android:layout_marginTop="15dp"
-            />
     </RelativeLayout>
-
-
-    <TextView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="您最近两周是否有经常访问的地点?（如家庭，办公室等）"
-        android:id="@+id/tv_qt1"
-        android:layout_below="@id/rl_info"
-        android:textSize="@dimen/text_title"
-        android:layout_margin="20dp"
-        android:textColor="@color/primary_text"
-        />
+        android:layout_below="@id/rl_1"
+        android:background="@drawable/encourage"/>
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:id="@+id/buttonView"
-        android:layout_below="@id/tv_qt1">
+        android:layout_below="@id/rl_info"
+        android:id="@id/rl_1"
+        android:layout_height="wrap_content">
 
-        <Button
-            android:layout_height="60dp"
-            android:layout_width="150dp"
-            android:id="@+id/btn_yes"
-            android:text="是"
-            android:background="@color/primary"
-            android:textColor="@color/primary_text"
+
+        <TextView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="感谢您为抗击疫情做出的贡献，让我们一起加油！"
+            android:id="@+id/tv_qt1"
+            android:gravity="center"
+            android:textSize="@dimen/text_title"
             android:layout_margin="20dp"
-            android:textSize="@dimen/text_title"/>
+            android:textColor="@color/primary_text"
+            />
         <Button
             android:layout_height="60dp"
-            android:layout_width="150dp"
-            android:id="@+id/btn_no"
-            android:text="否"
+            android:layout_width="180dp"
+            android:id="@+id/btn_next"
+            android:text="下一步"
             android:background="@color/primary"
             android:textColor="@color/primary_text"
-            android:layout_toRightOf="@+id/btn_yes"
+            android:layout_toRightOf="@+id/tv_qt1"
             android:layout_margin="20dp"
             android:textSize="@dimen/text_title"/>
     </RelativeLayout>
-
 
 </RelativeLayout>

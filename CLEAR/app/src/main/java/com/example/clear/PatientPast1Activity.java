@@ -35,6 +35,15 @@ public class PatientPast1Activity extends AppCompatActivity {
             }
         });
 
+        Button btn_back=findViewById(R.id.btn_back_2);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(PatientPast1Activity.this,PatientOftenActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Calendar c = Calendar.getInstance();
         String mYear = String.valueOf(c.get(Calendar.YEAR));
         String mMonth = String.valueOf(c.get(Calendar.MONTH) + 1);

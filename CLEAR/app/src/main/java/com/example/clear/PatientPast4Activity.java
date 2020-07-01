@@ -27,11 +27,11 @@ public class PatientPast4Activity extends AppCompatActivity {
             }
         });
 
-        Button btn_next=findViewById(R.id.btn_next);
-        btn_next.setOnClickListener(new View.OnClickListener() {
+        Button btn_back=findViewById(R.id.btn_back_5);
+        btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(PatientPast4Activity.this, MainActivity.class);
+                Intent intent=new Intent(PatientPast4Activity.this,PatientPast3Activity.class);
                 startActivity(intent);
             }
         });

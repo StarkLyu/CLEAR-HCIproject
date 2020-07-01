@@ -6,19 +6,40 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context=".PatientOftenActivity">
-    <TextView
-        android:id="@+id/text_idInfo"
+    <RelativeLayout
+        android:id="@+id/rl_info"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:gravity="center"
-        android:text="您前2-3天去过的地点"
-        android:background="@color/primary"
-        android:textSize="@dimen/text_title" />
+        android:layout_height="80dp">
+        <Button
+            android:id="@+id/btn_back_3"
+            android:background="@drawable/back"
+            android:gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+        <TextView
+            android:id="@+id/text_idInfo"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:text="您前2-3天去过的地点"
+            android:background="@color/primary"
+            android:textSize="@dimen/text_title" />
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/btn_voice"
+            android:background="@drawable/voice"
+            android:layout_marginLeft="350dp"
+            android:layout_marginTop="15dp"
+            />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_below="@+id/text_idInfo"
+        android:layout_below="@+id/rl_info"
         android:layout_margin="10dp"
         android:background="@drawable/shape_white_frame"
         android:id="@+id/rl_name">
